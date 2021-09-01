@@ -1,11 +1,12 @@
 {
   "name": "jama-whatsapp",
   "version": "0.1.0",
+  "type": "module",
   "description": "JAMA AI whatsapp service",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": "git@github.com:arccoza/jama-whatsapp.git",
   "author": "Adrien <adrien@arccoza.com>",
