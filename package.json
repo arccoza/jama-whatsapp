@@ -1,7 +1,6 @@
 {
   "name": "jama-whatsapp",
   "version": "0.1.0",
-  "type": "module",
   "description": "JAMA AI whatsapp service",
   "main": "index.js",
   "scripts": {
