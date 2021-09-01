@@ -1,0 +1,8 @@
+name: jama-whatsapp
+services:
+- environment_slug: node-js
+  github:
+    branch: js
+    deploy_on_push: true
+    repo: arccoza/jama-whatsapp
+  name: jama-whatsapp

@@ -1,0 +1,8 @@
+spec:
+  name: jama-whatsapp
+  services:
+  - environment_slug: node-js
+    git:
+      branch: js
+      repo_clone_url: https://github.com/arccoza/jama-whatsapp.git
+    name: jama-whatsapp
