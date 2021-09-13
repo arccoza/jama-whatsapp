@@ -13,3 +13,14 @@
 
 # Dependency directories (remove the comment below to include it)
 vendor/
+
+# dotenv environment variables file
+.env
+.env.test
+.env.production
+
+# local env files
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
