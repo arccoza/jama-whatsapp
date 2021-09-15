@@ -4,6 +4,7 @@ import (
 	"fmt"
 	whatsapp "github.com/Rhymen/go-whatsapp"
 	"time"
+	"os"
 )
 
 func main() {
@@ -14,12 +15,17 @@ func main() {
 		return
 	}
 
+	wac.AddHandler(myHandler{})
+
 	qrChan := make(chan string)
 	go func() {
-		fmt.Printf("qr code: %v\n", qrToURI(qrChan))
+		// fmt.Printf("qr code: %v\n", qrToURI(qrChan))
+		qrToTerminal(qrChan)
 	}()
 
-	wac.SetClientName("And1", "and1", "2,2121,6")
+	// fmt.Println(whatsapp.CheckCurrentServerVersion())
+	// wac.SetClientName("And1", "and1", "2,2126,14")
+	wac.SetClientVersion(2, 2126, 14)
 
 	sess, err2 := wac.Login(qrChan)
 	if err2 != nil {
@@ -27,5 +33,51 @@ func main() {
 		fmt.Println(err2)
 		return
 	}
-	fmt.Println(sess)
+
+	jsonSess, _ := sess.ToJSON()
+	fmt.Println("Session\n", jsonSess)
 }
+
+type myHandler struct{}
+
+func (myHandler) HandleError(err error) {
+	fmt.Fprintf(os.Stderr, "%v", err)
+}
+
+func (myHandler) HandleTextMessage(message whatsapp.TextMessage) {
+	fmt.Println("HandleTextMessage\n", message)
+}
+
+func (myHandler) HandleImageMessage(message whatsapp.ImageMessage) {
+	fmt.Println("HandleImageMessage\n", message)
+}
+
+func (myHandler) HandleDocumentMessage(message whatsapp.DocumentMessage) {
+	fmt.Println("HandleDocumentMessage\n", message)
+}
+
+func (myHandler) HandleVideoMessage(message whatsapp.VideoMessage) {
+	fmt.Println("HandleVideoMessage\n", message)
+}
+
+func (myHandler) HandleAudioMessage(message whatsapp.AudioMessage){
+	fmt.Println("HandleAudioMessage\n", message)
+}
+
+func (myHandler) HandleJsonMessage(message string) {
+	fmt.Println("HandleJsonMessage\n", message)
+}
+
+func (myHandler) HandleContactMessage(message whatsapp.ContactMessage) {
+	fmt.Println("HandleContactMessage\n", message)
+}
+
+func (myHandler) HandleBatteryMessage(message whatsapp.BatteryMessage) {
+	fmt.Println("HandleBatteryMessage\n", message)
+}
+
+func (myHandler) HandleNewContact(contact whatsapp.Contact) {
+	fmt.Println("HandleNewContact\n", contact)
+}
+
+
