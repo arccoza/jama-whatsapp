@@ -8,6 +8,7 @@ import (
 
 	// "google.golang.org/api/iterator"
 	firebase "firebase.google.com/go/v4"
+	"firebase.google.com/go/v4/storage"
 	"cloud.google.com/go/firestore"
 	"google.golang.org/api/option"
 )
@@ -18,7 +19,7 @@ var conf = &firebase.Config{
 	ProjectID: os.Getenv("FIREBASE_PROJECT_ID"),
 }
 
-func initFirebase(ctx context.Context) (*firebase.App, *firestore.Client) {
+func initFirebase(ctx context.Context) (*firebase.App, *firestore.Client, *storage.Client) {
 	app, err := firebase.NewApp(ctx, conf, cred)
 	if err != nil {
 		log.Fatalln(err)
@@ -29,6 +30,11 @@ func initFirebase(ctx context.Context) (*firebase.App, *firestore.Client) {
 		log.Fatalln(err)
 	}
 
+	store, err := app.Storage(ctx)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
 	fmt.Println(app, db)
-	return app, db
+	return app, db, store
 }
