@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 	whatsapp "github.com/Rhymen/go-whatsapp"
-	"time"
 	"os"
+	"time"
 )
 
 func main() {
@@ -36,6 +36,21 @@ func main() {
 
 	jsonSess, _ := sess.ToJSON()
 	fmt.Println("Session\n", jsonSess)
+
+	// text := whatsapp.TextMessage{
+	// 	Info: whatsapp.MessageInfo{
+	// 		// Id: "s1Oy9hFHDJomezqNJegP8haTwz9tNJE9",
+	// 		RemoteJid: "16178690884@s.whatsapp.net",
+	// 	},
+	// 	Text: "Test update",
+	// }
+
+	// id, err := wac.Send(text)
+
+	// fmt.Println("Sent\n", text, id, err)
+
+	fmt.Println("Waiting...")
+	fmt.Scanln()
 }
 
 type myHandler struct{}
@@ -60,7 +75,7 @@ func (myHandler) HandleVideoMessage(message whatsapp.VideoMessage) {
 	fmt.Println("HandleVideoMessage\n", message)
 }
 
-func (myHandler) HandleAudioMessage(message whatsapp.AudioMessage){
+func (myHandler) HandleAudioMessage(message whatsapp.AudioMessage) {
 	fmt.Println("HandleAudioMessage\n", message)
 }
 
@@ -79,5 +94,3 @@ func (myHandler) HandleBatteryMessage(message whatsapp.BatteryMessage) {
 func (myHandler) HandleNewContact(contact whatsapp.Contact) {
 	fmt.Println("HandleNewContact\n", contact)
 }
-
-
