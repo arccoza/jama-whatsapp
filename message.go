@@ -80,6 +80,13 @@ type Cache struct {
 	Users map[string]User
 }
 
+func NewCache() *Cache {
+	return &Cache{
+		make(map[string]Chat),
+		make(map[string]User),
+	}
+}
+
 func (c *Cache) SetChats(chats []Chat) {
 	for _, chat := range chats {
 		c.Chats[chat.ID] = chat
