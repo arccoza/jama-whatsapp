@@ -74,3 +74,28 @@ type Attachment struct {
 }
 
 type Handler func(pay Payload)
+
+type Cache struct {
+	Chats map[string]Chat
+	Users map[string]User
+}
+
+func (c *Cache) SetChats(chats []Chat) {
+	for _, chat := range chats {
+		c.Chats[chat.ID] = chat
+	}
+}
+
+func (c *Cache) GetChat(id string) Chat {
+	return c.Chats[id]
+}
+
+func (c *Cache) SetUsers(users []User) {
+	for _, user := range users {
+		c.Users[user.ID] = user
+	}
+}
+
+func (c *Cache) GetUser(id string) User {
+	return c.Users[id]
+}
