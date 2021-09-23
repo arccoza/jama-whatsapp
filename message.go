@@ -45,6 +45,7 @@ type Contact struct {
 
 type Chat struct {
 	ID string `json:"-" firestore:"-"`
+	UID string `json:"uid" firestore:"uid"`
 	Name string `json:"name" firestore:"name"`
 	Type string `json:"type" firestore:"type"`// Group, Direct or Bot
 	Protocol string `json:"protocol" firestore:"protocol"` // whatsapp, wechat, google chat, FB messenger
