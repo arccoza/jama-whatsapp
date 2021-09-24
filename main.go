@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	whatsapp "github.com/Rhymen/go-whatsapp"
+	proto "github.com/Rhymen/go-whatsapp/binary/proto"
 	"os"
 	"time"
 )
@@ -59,38 +60,50 @@ func (myHandler) HandleError(err error) {
 	fmt.Fprintf(os.Stderr, "%v", err)
 }
 
-func (myHandler) HandleTextMessage(message whatsapp.TextMessage) {
-	fmt.Println("HandleTextMessage\n", message)
+func (myHandler) HandleRawMessage(message *proto.WebMessageInfo) {
+	fmt.Println("HandleRawMessage\n", message)
 }
 
-func (myHandler) HandleImageMessage(message whatsapp.ImageMessage) {
-	fmt.Println("HandleImageMessage\n", message)
-}
+// func (myHandler) HandleTextMessage(message whatsapp.TextMessage) {
+// 	fmt.Println("HandleTextMessage\n", message)
+// }
 
-func (myHandler) HandleDocumentMessage(message whatsapp.DocumentMessage) {
-	fmt.Println("HandleDocumentMessage\n", message)
-}
+// func (myHandler) HandleImageMessage(message whatsapp.ImageMessage) {
+// 	fmt.Println("HandleImageMessage\n", message)
+// }
 
-func (myHandler) HandleVideoMessage(message whatsapp.VideoMessage) {
-	fmt.Println("HandleVideoMessage\n", message)
-}
+// func (myHandler) HandleDocumentMessage(message whatsapp.DocumentMessage) {
+// 	fmt.Println("HandleDocumentMessage\n", message)
+// }
 
-func (myHandler) HandleAudioMessage(message whatsapp.AudioMessage) {
-	fmt.Println("HandleAudioMessage\n", message)
-}
+// func (myHandler) HandleVideoMessage(message whatsapp.VideoMessage) {
+// 	fmt.Println("HandleVideoMessage\n", message)
+// }
 
-func (myHandler) HandleJsonMessage(message string) {
-	fmt.Println("HandleJsonMessage\n", message)
-}
+// func (myHandler) HandleAudioMessage(message whatsapp.AudioMessage) {
+// 	fmt.Println("HandleAudioMessage\n", message)
+// }
 
-func (myHandler) HandleContactMessage(message whatsapp.ContactMessage) {
-	fmt.Println("HandleContactMessage\n", message)
-}
+// func (myHandler) HandleJsonMessage(message string) {
+// 	fmt.Println("HandleJsonMessage\n", message)
+// }
 
-func (myHandler) HandleBatteryMessage(message whatsapp.BatteryMessage) {
-	fmt.Println("HandleBatteryMessage\n", message)
-}
+// func (myHandler) HandleContactMessage(message whatsapp.ContactMessage) {
+// 	fmt.Println("HandleContactMessage\n", message)
+// }
 
-func (myHandler) HandleNewContact(contact whatsapp.Contact) {
-	fmt.Println("HandleNewContact\n", contact)
-}
+// func (myHandler) HandleBatteryMessage(message whatsapp.BatteryMessage) {
+// 	fmt.Println("HandleBatteryMessage\n", message)
+// }
+
+// func (myHandler) HandleNewContact(contact whatsapp.Contact) {
+// 	fmt.Println("HandleNewContact\n", contact)
+// }
+
+// func (myHandler) HandleContactList(contacts []whatsapp.Contact) {
+// 	fmt.Println("HandleContactList\n", contacts)
+// }
+
+// func (myHandler) HandleChatList(chats []whatsapp.Chat) {
+// 	fmt.Println("HandleChatList\n", chats)
+// }
