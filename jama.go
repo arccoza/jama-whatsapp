@@ -5,30 +5,43 @@ import (
 	"context"
 	"firebase.google.com/go/v4/storage"
 	"fmt"
-	"google.golang.org/api/iterator"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
+	// "google.golang.org/api/iterator"
+	// "google.golang.org/grpc/codes"
+	// "google.golang.org/grpc/status"
 )
 
 type JamaConnector struct {
 	ctx         context.Context
 	db          *firestore.Client
 	store       *storage.Client
+	uid         string
+	protocol    string
 	contacts    *firestore.CollectionRef
 	chats       *firestore.CollectionRef
 	messages    *firestore.CollectionRef
 	subscribers map[*Handler]Handler
+	cache       *Cache
 }
 
-func NewJamaConnector(ctx context.Context, db *firestore.Client, store *storage.Client) *JamaConnector {
+func NewJamaConnector(
+		ctx context.Context,
+		db *firestore.Client,
+		store *storage.Client,
+		uid,
+		protocol string,
+	) *JamaConnector {
+
 	return &JamaConnector{
 		ctx,
 		db,
 		store,
+		uid,
+		protocol,
 		db.Collection("contacts"),
 		db.Collection("chats"),
 		db.Collection("messages"),
 		map[*Handler]Handler{},
+		NewCache(),
 	}
 }
 
@@ -57,42 +70,35 @@ func (c *JamaConnector) notify(pay Payload) {
 	}
 }
 
-func (c *JamaConnector) listen() error {
-	it := c.messages.Where("status", "==", Pending).Snapshots(c.ctx)
+func (c *JamaConnector) Listen() {
+	// cit := c.chats.Where("status", "==", Pending).Snapshots(c.ctx)
+	// mit := c.messages.Where("status", "==", Pending).Snapshots(c.ctx)
+	qm := c.messages.Where("status", "==", Pending)
+
+	c.listen(qm, func(change firestore.DocumentChange){
+		switch change.Kind {
+		case firestore.DocumentAdded:
+			fmt.Println("Added: %v\n", change.Doc.Data())
+		case firestore.DocumentModified:
+			fmt.Println("Modified: %v\n", change.Doc.Data())
+		case firestore.DocumentRemoved:
+			fmt.Println("Removed: %v\n", change.Doc.Data())
+		}
+	})
+}
+
+func (c *JamaConnector) listen(q firestore.Query, fn func(change firestore.DocumentChange)) error {
+	it := q.Snapshots(c.ctx)
+	defer it.Stop()
 
 	for {
 		snap, err := it.Next()
-		// DeadlineExceeded will be returned when ctx is cancelled.
-		if status.Code(err) == codes.DeadlineExceeded {
-			return nil
-		}
 		if err != nil {
 			return fmt.Errorf("Snapshots.Next: %v", err)
 		}
-		if snap != nil {
-			for _, change := range snap.Changes {
-				switch change.Kind {
-				case firestore.DocumentAdded:
-					fmt.Println("Added: %v\n", change.Doc.Data())
-				case firestore.DocumentModified:
-					fmt.Println("Modified: %v\n", change.Doc.Data())
-				case firestore.DocumentRemoved:
-					fmt.Println("Removed: %v\n", change.Doc.Data())
-				}
-			}
-
-			for {
-				doc, err := snap.Documents.Next()
-				if err == iterator.Done {
-					break
-				}
-				if err != nil {
-					return fmt.Errorf("Documents.Next: %v", err)
-				}
-				fmt.Println("Current cities in California: %v\n", doc.Ref.ID)
-			}
+		for _, change := range snap.Changes {
+			fn(change)
 		}
-
 	}
 }
 
@@ -101,7 +107,67 @@ func (c *JamaConnector) Query() {
 }
 
 func main() {
-	jc := NewJamaConnector(context.Background(), db, store)
+	jc := NewJamaConnector(context.Background(), db, store, "", "whatsapp")
 	jc.Publish(Payload{Message: &Message{ID: "1234", Text: "Oi Bob.", Status: Pending}})
-	jc.listen()
+	jc.Publish(Payload{Chat: &Chat{ID: "1234", Members: map[string]Member{"1": Member{ID: "1"}, "2": Member{ID: "2"}}, Status: Pending}})
+	jc.Listen()
 }
+
+// type ChangeIterator struct {
+// 	query   firestore.QuerySnapshotIterator
+// 	idx int
+// }
+
+// func NewChangeIterator(query firestore.QuerySnapshotIterator) *ChangeIterator {
+// 	return &ChangeIterator{query}
+// }
+
+// func (it *ChangeIterator) Next() (*firestore.DocumentChange, error) {
+// 	snap, err := it.query.Next()
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	if it.idx < len(snap.Changes) {
+// 		chg := snap.Changes[it.idx]
+// 		it.idx += 1
+// 		return &chg, nil
+// 	}
+// 	return nil, iterator.Done
+// }
+
+// func (it *ChangeIterator) Stop() {
+// 	it.query.Stop()
+// }
+
+// type DocumentIterator struct {
+// 	query    firestore.QuerySnapshotIterator
+// 	docs     firestore.DocumentIterator
+// 	docsDone bool
+// }
+
+// func NewDocumentIterator(query firestore.QuerySnapshotIterator) *DocumentIterator {
+// 	return &DocumentIterator{query: query, docsDone: true}
+// }
+
+// func (it *DocumentIterator) Next() (*firestore.DocumentSnapshot, error) {
+// 	if !it.docsDone {
+// 		if doc, err := it.docs.Next; err != nil {
+// 			it.docsDone = true
+// 		} else {
+// 			return doc, nill
+// 		}
+// 	}
+// 	if it.docsDone {
+// 		if snap, err := it.query.Next(); err != nil {
+// 			return nil, err
+// 		} else {
+// 			it.docs = snap.Documents
+// 			it.docsDone = false
+// 		}
+// 	}
+// }
+
+// func (it *DocumentIterator) Stop() {
+// 	it.docs.Stop()
+// 	it.query.Stop()
+// }
