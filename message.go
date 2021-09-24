@@ -78,12 +78,12 @@ type Message struct {
 	To string `json:"to" firestore:"to"`
 	Text string `json:"text" firestore:"text"`
 	Status Status `json:"status" firestore:"status"` // sending, sent, received, read
-	IsDeleted bool `json:"isDeleted" firestore:"isDeleted"`
-	// Attachments []Attachment `json:"attachments" firestore:"attachments"`
+	Deleted bool `json:"deleted" firestore:"deleted"`
+	Attachments []Attachment `json:"attachments" firestore:"attachments"`
 }
 
 type Attachment struct {
-	ID string `json:"-" firestore:"-"`
+	ID string `json:"id" firestore:"id"`
 	Type int `json:"type" firestore:"type"`
 	Mime string `json:"mime" firestore:"mime"`
 	URL string `json:"url" firestore:"url"`
