@@ -54,20 +54,24 @@ type ContactInfo struct {
 
 type Chat struct {
 	ID string `json:"-" firestore:"-"`
-	UID string `json:"uid" firestore:"uid"` // User ID
 	Name string `json:"name" firestore:"name"`
 	Type string `json:"type" firestore:"type"`// Group, Direct or Bot
 	Protocol string `json:"protocol" firestore:"protocol"` // whatsapp, wechat, google chat, FB messenger
 	Status Status `json:"status" firestore:"status"`
-	IsMuted bool `json:"isMuted" firestore:"isMuted"`
-	IsSpam bool `json:"isSpam" firestore:"isSpam"`
-	IsDeleted bool `json:"isDeleted" firestore:"isDeleted"`
+	Deleted bool `json:"deleted" firestore:"deleted"`
+	Members map[string]Member `json:"members" firestore:"members"`
+}
+
+type Member struct {
+	ID string `json:"id" firestore:"id"`
+	Role string `json:"role" firestore:"role"`
+	Unread int `json:"unread" firestore:"unread"`
+	Muted bool `json:"muted" firestore:"muted"`
+	Spam bool `json:"spam" firestore:"spam"`
 }
 
 type Message struct {
 	ID string `json:"-" firestore:"-"`
-	CID string `json:"cid" firestore:"cid"` // Chat ID
-	UID string `json:"uid" firestore:"uid"` // User ID
 	Timestamp int64 `json:"timestamp" firestore:"timestamp"`
 	Protocol string `json:"protocol" firestore:"protocol"` // whatsapp, wechat, google chat, FB messenger
 	From string `json:"from" firestore:"from"`
