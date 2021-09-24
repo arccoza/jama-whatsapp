@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"fmt"
+	// "fmt"
 	"log"
 	"os"
 
@@ -35,6 +35,8 @@ func initFirebase(ctx context.Context) (*firebase.App, *firestore.Client, *stora
 		log.Fatalln(err)
 	}
 
-	fmt.Println(app, db)
+	// fmt.Println(app, db)
 	return app, db, store
 }
+
+var firebaseApp, db, store = initFirebase(ctx)
