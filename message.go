@@ -2,6 +2,7 @@ package main
 
 import (
 	// "encoding/json"
+	nanoid "github.com/matoous/go-nanoid/v2"
 )
 
 type Status int
@@ -34,10 +35,18 @@ const (
 type Payload struct {
 	Message *Message
 	Chat *Chat
-	Contact *Contact
+	ContactInfo *ContactInfo
 }
 
-type Contact struct {
+type PayloadKind int
+
+const (
+	MessagePayload PayloadKind = iota
+	ChatPayload
+	UserPayload
+)
+
+type ContactInfo struct {
 	ID string `json:"-" firestore:"-"`
 	Firstname string `json:"firstname" firestore:"firstname"`
 	Lastname string `json:"lastname" firestore:"lastname"`
@@ -45,24 +54,28 @@ type Contact struct {
 
 type Chat struct {
 	ID string `json:"-" firestore:"-"`
-	UID string `json:"uid" firestore:"uid"`
+	UID string `json:"uid" firestore:"uid"` // User ID
 	Name string `json:"name" firestore:"name"`
 	Type string `json:"type" firestore:"type"`// Group, Direct or Bot
 	Protocol string `json:"protocol" firestore:"protocol"` // whatsapp, wechat, google chat, FB messenger
 	Status Status `json:"status" firestore:"status"`
 	IsMuted bool `json:"isMuted" firestore:"isMuted"`
 	IsSpam bool `json:"isSpam" firestore:"isSpam"`
+	IsDeleted bool `json:"isDeleted" firestore:"isDeleted"`
 }
 
 type Message struct {
 	ID string `json:"-" firestore:"-"`
 	CID string `json:"cid" firestore:"cid"` // Chat ID
+	UID string `json:"uid" firestore:"uid"` // User ID
 	Timestamp int64 `json:"timestamp" firestore:"timestamp"`
+	Protocol string `json:"protocol" firestore:"protocol"` // whatsapp, wechat, google chat, FB messenger
 	From string `json:"from" firestore:"from"`
 	To string `json:"to" firestore:"to"`
 	Text string `json:"text" firestore:"text"`
-	// Attachments []Attachment `json:"attachments" firestore:"attachments"`
 	Status Status `json:"status" firestore:"status"` // sending, sent, received, read
+	IsDeleted bool `json:"isDeleted" firestore:"isDeleted"`
+	// Attachments []Attachment `json:"attachments" firestore:"attachments"`
 }
 
 type Attachment struct {
@@ -77,13 +90,13 @@ type Handler func(pay Payload)
 
 type Cache struct {
 	Chats map[string]Chat
-	Users map[string]User
+	Contacts map[string]ContactInfo
 }
 
 func NewCache() *Cache {
 	return &Cache{
 		make(map[string]Chat),
-		make(map[string]User),
+		make(map[string]ContactInfo),
 	}
 }
 
@@ -97,12 +110,16 @@ func (c *Cache) GetChat(id string) Chat {
 	return c.Chats[id]
 }
 
-func (c *Cache) SetUsers(users []User) {
-	for _, user := range users {
-		c.Users[user.ID] = user
+func (c *Cache) SetContacts(contacts []ContactInfo) {
+	for _, contact := range contacts {
+		c.Contacts[contact.ID] = contact
 	}
 }
 
-func (c *Cache) GetUser(id string) User {
-	return c.Users[id]
+func (c *Cache) GetContact(id string) ContactInfo {
+	return c.Contacts[id]
+}
+
+func GenerateID() (string, error) {
+	return nanoid.Generate("0123456789ABCDEF", 32)
 }
