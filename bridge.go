@@ -47,6 +47,7 @@ func (bm *BridgeManager) Listen() {
 			change.Doc.DataTo(integ)
 			integ.ID = change.Doc.Ref.ID
 			integ.Org = change.Doc.Ref.Parent.Parent.ID
+			integ.ref = change.Doc.Ref
 
 			switch change.Kind {
 			case firestore.DocumentAdded:
