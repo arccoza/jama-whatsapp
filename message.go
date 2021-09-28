@@ -137,6 +137,7 @@ func GenerateID() (string, error) {
 
 type Integration struct {
 	ID       string `json:"-" firestore:"-"`
+	Org      string `json:"-" firestore:"-"`
 	Name     string `json:"name" firestore:"name"`
 	Owner    string `json:"owner" firestore:"owner"`
 	Provider string `json:"provider" firestore:"provider"`
