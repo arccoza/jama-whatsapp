@@ -3,6 +3,7 @@ package main
 import (
 	// "encoding/json"
 	nanoid "github.com/matoous/go-nanoid/v2"
+	"cloud.google.com/go/firestore"
 )
 
 type Status int
@@ -144,6 +145,7 @@ type Integration struct {
 	Kind     string `json:"kind" firestore:"kind"`
 	QRValue  string `json:"qrValue" firestore:"qrValue"`
 	Session  string `json:"session" firestore:"session"`
+	ref      *firestore.DocumentRef `json:"-" firestore:"-"`
 }
 
 type Connector interface {
