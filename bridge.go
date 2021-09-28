@@ -46,6 +46,7 @@ func (bm *BridgeManager) Listen() {
 			integ := &Integration{}
 			change.Doc.DataTo(integ)
 			integ.ID = change.Doc.Ref.ID
+			integ.Org = change.Doc.Ref.Parent.Parent.ID
 
 			switch change.Kind {
 			case firestore.DocumentAdded:
@@ -64,11 +65,11 @@ func (bm *BridgeManager) addBridge(integ *Integration) {
 	b := WhatsAppConnector{}
 
 	bm.bridges[integ.ID] = Bridge{&a, &b}
-	fmt.Println("Added: \n", bm.bridges[integ.ID].A)
+	fmt.Println("Added: \n", bm.bridges[integ.ID].A, integ)
 }
 
 func (bm *BridgeManager) modBridge(integ *Integration) {
-	bridge := bm.bridges[integ.ID]
+	// bridge := bm.bridges[integ.ID]
 }
 
 func (bm *BridgeManager) remBridge(integ *Integration) {
