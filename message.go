@@ -59,10 +59,10 @@ type Chat struct {
 	Protocol string `json:"protocol" firestore:"protocol"` // whatsapp, wechat, google chat, FB messenger
 	Status Status `json:"status" firestore:"status"`
 	Deleted bool `json:"deleted" firestore:"deleted"`
-	Members map[string]Member `json:"members" firestore:"members"`
+	Members map[string]ChatMember `json:"members" firestore:"members"`
 }
 
-type Member struct {
+type ChatMember struct {
 	ID string `json:"id" firestore:"id"`
 	Role string `json:"role" firestore:"role"`
 	Unread int `json:"unread" firestore:"unread"`
