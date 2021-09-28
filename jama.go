@@ -105,16 +105,16 @@ func (c *JamaConnector) listen(q firestore.Query, fn func(change firestore.Docum
 	}
 }
 
-func (c *JamaConnector) Query() {
-
+func (c *JamaConnector) Query(q string) []Payload {
+	return nil
 }
 
-func main() {
-	jc := NewJamaConnector(context.Background(), "mako_co", db, store, "", "whatsapp")
-	jc.Publish(Payload{Message: &Message{ID: "1234", Text: "Oi Bob.", Status: Pending}})
-	jc.Publish(Payload{Chat: &Chat{ID: "1234", Members: map[string]Member{"1": Member{ID: "1"}, "2": Member{ID: "2"}}, Status: Pending}})
-	jc.Listen()
-}
+// func main() {
+// 	jc := NewJamaConnector(context.Background(), "mako_co", db, store, "", "whatsapp")
+// 	jc.Publish(Payload{Message: &Message{ID: "1234", Text: "Oi Bob.", Status: Pending}})
+// 	jc.Publish(Payload{Chat: &Chat{ID: "1234", Members: map[string]Member{"1": Member{ID: "1"}, "2": Member{ID: "2"}}, Status: Pending}})
+// 	jc.Listen()
+// }
 
 // type ChangeIterator struct {
 // 	query   firestore.QuerySnapshotIterator
