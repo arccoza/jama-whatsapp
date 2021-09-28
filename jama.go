@@ -12,6 +12,7 @@ import (
 
 type JamaConnector struct {
 	ctx         context.Context
+	org         string
 	db          *firestore.Client
 	store       *storage.Client
 	uid         string
@@ -25,6 +26,7 @@ type JamaConnector struct {
 
 func NewJamaConnector(
 		ctx context.Context,
+		org string,
 		db *firestore.Client,
 		store *storage.Client,
 		uid,
@@ -33,13 +35,14 @@ func NewJamaConnector(
 
 	return &JamaConnector{
 		ctx,
+		org,
 		db,
 		store,
 		uid,
 		protocol,
-		db.Collection("contacts"),
-		db.Collection("chats"),
-		db.Collection("messages"),
+		db.Collection(fmt.Sprintf("organizations/%s/contacts", org)),
+		db.Collection(fmt.Sprintf("organizations/%s/chats", org)),
+		db.Collection(fmt.Sprintf("organizations/%s/messages", org)),
 		map[*Handler]Handler{},
 		NewCache(),
 	}
@@ -107,7 +110,7 @@ func (c *JamaConnector) Query() {
 }
 
 func main() {
-	jc := NewJamaConnector(context.Background(), db, store, "", "whatsapp")
+	jc := NewJamaConnector(context.Background(), "mako_co", db, store, "", "whatsapp")
 	jc.Publish(Payload{Message: &Message{ID: "1234", Text: "Oi Bob.", Status: Pending}})
 	jc.Publish(Payload{Chat: &Chat{ID: "1234", Members: map[string]Member{"1": Member{ID: "1"}, "2": Member{ID: "2"}}, Status: Pending}})
 	jc.Listen()
