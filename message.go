@@ -90,6 +90,13 @@ type Attachment struct {
 	Location [2]int64 `json:"location" firestore:"location"`
 }
 
+type File struct {
+	ID string `json:"-" firestore:"-"`
+	Type int `json:"type" firestore:"type"`
+	Mime string `json:"mime" firestore:"mime"`
+	URL string `json:"url" firestore:"url"`
+}
+
 type Handler func(pay Payload)
 
 type Cache struct {
@@ -126,4 +133,20 @@ func (c *Cache) GetContact(id string) ContactInfo {
 
 func GenerateID() (string, error) {
 	return nanoid.Generate("0123456789ABCDEF", 32)
+}
+
+type Integration struct {
+	ID       string `json:"-" firestore:"-"`
+	Name     string `json:"name" firestore:"name"`
+	Owner    string `json:"owner" firestore:"owner"`
+	Provider string `json:"provider" firestore:"provider"`
+	Kind     string `json:"kind" firestore:"kind"`
+	QRValue  string `json:"qrValue" firestore:"qrValue"`
+	Session  string `json:"session" firestore:"session"`
+}
+
+type Connector interface {
+	Publish(pay Payload)
+	Subscribe(fn Handler)
+	Query(q string) []Payload
 }
