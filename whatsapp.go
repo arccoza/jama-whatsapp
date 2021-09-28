@@ -8,14 +8,22 @@ type WhatsAppConnector struct {
 	conn *whatsapp.Conn
 }
 
-func (c WhatsAppConnector) Publish(msg *Message) {
+func NewWhatsAppConnector() {
 
 }
 
-func (c WhatsAppConnector) Subscribe(handler *Handler) {
+func (c WhatsAppConnector) Publish(pay Payload) {
 
 }
 
-func (c WhatsAppConnector) Query() {
+func (c WhatsAppConnector) Subscribe(fn Handler) {
 
+}
+
+func (c WhatsAppConnector) Unsubscribe(fn Handler) {
+
+}
+
+func (c WhatsAppConnector) Query(q string) []Payload {
+	return nil
 }
