@@ -13,7 +13,7 @@ type WhatsAppConnector struct {
 
 func NewWhatsAppConnector(integ *Integration) *WhatsAppConnector {
 	return &WhatsAppConnector{
-		conn: initWhatsApp(integ, nil),
+		conn: initWhatsApp(integ, &waHandler{}),
 	}
 }
 
