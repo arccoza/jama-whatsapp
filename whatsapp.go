@@ -96,14 +96,14 @@ func initWhatsApp(integ *Integration, handler *waHandler) *whatsapp.Conn {
 	wac.SetClientName("JAMA", "jama", "0,1,0")
 	// wac.AddHandler(handler)
 
-	// Attempt to restore the session
-	if integ.Session != "" {
-		session := whatsapp.Session{}
-		session.FromJSON([]byte(integ.Session))
+	if integ.Whatsapp == nil {
+		integ.Whatsapp = &WhatsAppIntegration{}
+	}
 
-		if session, err := wac.RestoreWithSession(session); err == nil {
-			json, _ := session.ToJSON()
-			integ.Session = string(json)
+	// Attempt to restore the session
+	if integ.Whatsapp.Session.ServerToken != "" {
+		if session, err := wac.RestoreWithSession(integ.Whatsapp.Session); err == nil {
+			integ.Whatsapp.Session = session
 			integ.ExID = session.Wid
 			integ.ref.Set(context.Background(), integ)
 			return wac
@@ -115,13 +115,12 @@ func initWhatsApp(integ *Integration, handler *waHandler) *whatsapp.Conn {
 	go func() {
 		val := <-qrChan
 		qrToTerminal(val)
-		integ.QRValue = val
+		integ.Whatsapp.QRValue = val
 		integ.ref.Set(context.Background(), integ)
 	}()
 
 	if session, err := wac.Login(qrChan); err == nil {
-		json, _ := session.ToJSON()
-		integ.Session = string(json)
+		integ.Whatsapp.Session = session
 		integ.ExID = session.Wid
 		integ.ref.Set(context.Background(), integ)
 		return wac
