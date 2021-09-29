@@ -27,9 +27,9 @@ const (
 // )
 
 type Payload struct {
-	Message *Message
-	Chat *Chat
-	ContactInfo *ContactInfo
+	Messages []Message
+	Chats []Chat
+	ContactInfos []ContactInfo
 }
 
 type PayloadKind int
