@@ -2,11 +2,11 @@ package main
 
 import (
 	"encoding/base64"
-	qrcode "github.com/skip2/go-qrcode"
 	"github.com/mdp/qrterminal/v3"
+	qrcode "github.com/skip2/go-qrcode"
 	"os"
 	"reflect"
-	// "fmt"
+	"fmt"
 )
 
 func qrToURI(val string) string {
@@ -18,7 +18,7 @@ func qrToTerminal(val string) {
 	qrterminal.GenerateHalfBlock(val, qrterminal.L, os.Stdout)
 }
 
-func ToMap(s interface{}, tagName string) (map[string]interface{}) {
+func ToMap(s interface{}, tagName string) map[string]interface{} {
 	m := make(map[string]interface{})
 
 	if s == nil {
@@ -27,27 +27,68 @@ func ToMap(s interface{}, tagName string) (map[string]interface{}) {
 
 	v := reflect.ValueOf(s)
 
-    if v.Kind() == reflect.Ptr {
-        v = v.Elem()
-    }
+	if v.Kind() == reflect.Ptr {
+		v = v.Elem()
+	}
 
-    if v.Kind() != reflect.Struct {
-        return nil
-    }
+	if v.Kind() != reflect.Struct {
+		return nil
+	}
 
-    for i, t := 0, v.Type(); i < v.NumField(); i++ {
-    	fld := t.Field(i)
-    	tag := fld.Tag.Get(tagName)
+	for i, t := 0, v.Type(); i < v.NumField(); i++ {
+		fld := t.Field(i)
+		tag := fld.Tag.Get(tagName)
 
-    	if tag != "" && tag != "-" {
-            m[tag] = v.Field(i).Interface()
-            if fld.Type.Kind() == reflect.Struct {
-            	m[tag] = ToMap(v.Field(i).Interface(), tagName)
-            } else {
-            	m[tag] = v.Field(i).Interface()
-            }
-        }
-    }
+		if tag != "" && tag != "-" {
+			if fld.Type.Kind() == reflect.Struct {
+				m[tag] = ToMap(v.Field(i).Interface(), tagName)
+			} else {
+				m[tag] = v.Field(i).Interface()
+			}
+		}
+	}
 
-    return m
+	return m
+}
+
+func FromMap(s interface{}, m map[string]interface{}, tagName string) error {
+	if s == nil {
+		return fmt.Errorf("Target struct is nil: %s", s)
+	}
+
+	v := reflect.ValueOf(s)
+
+	if v.Kind() == reflect.Ptr {
+		v = v.Elem()
+	} else {
+		return fmt.Errorf("Target must be a pointer to a struct")
+	}
+
+	t := v.Type()
+
+	for i := 0; i < v.NumField(); i++ {
+		fld := v.Field(i)
+		tag := t.Field(i).Tag.Get(tagName)
+
+		if mv, ok := m[tag]; tag != "" && tag != "-" && ok {
+			val := reflect.ValueOf(mv)
+
+			if !fld.CanSet() {
+				return fmt.Errorf("Cannot set %s field value", tag)
+			}
+
+			// TODO: Add support for nested structs
+			// if fld.Type.Kind() == reflect.Struct {
+			// 	FromMap(fld.Interface(), )
+			// }
+
+			if fld.Type() != val.Type() {
+        		return fmt.Errorf("Field and value type don't match: %t", mv)
+			}
+
+			fld.Set(val)
+		}
+	}
+
+	return nil
 }
