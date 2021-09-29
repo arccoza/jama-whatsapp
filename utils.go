@@ -18,11 +18,11 @@ func qrToTerminal(val string) {
 	qrterminal.GenerateHalfBlock(val, qrterminal.L, os.Stdout)
 }
 
-func ToMap(s interface{}, tagName string) (map[string]interface{}, error) {
+func ToMap(s interface{}, tagName string) (map[string]interface{}) {
 	m := make(map[string]interface{})
 
 	if s == nil {
-		return m, nil
+		return m
 	}
 
 	v := reflect.ValueOf(s)
@@ -32,7 +32,7 @@ func ToMap(s interface{}, tagName string) (map[string]interface{}, error) {
     }
 
     if v.Kind() != reflect.Struct {
-        return nil, fmt.Errorf("ToMap only accepts structs; got %T", v)
+        return nil
     }
 
     for i, t := 0, v.Type(); i < v.NumField(); i++ {
@@ -42,12 +42,12 @@ func ToMap(s interface{}, tagName string) (map[string]interface{}, error) {
     	if tag != "" && tag != "-" {
             m[tag] = v.Field(i).Interface()
             if fld.Type.Kind() == reflect.Struct {
-            	m[tag], _ = ToMap(v.Field(i).Interface(), tagName)
+            	m[tag] = ToMap(v.Field(i).Interface(), tagName)
             } else {
             	m[tag] = v.Field(i).Interface()
             }
         }
     }
 
-    return m, nil
+    return m
 }
