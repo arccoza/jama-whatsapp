@@ -34,6 +34,7 @@ func (c WhatsAppConnector) Query(q string) []Payload {
 }
 
 type waHandler struct {
+	conn *whatsapp.Conn
 	pub func(pay Payload)
 }
 
