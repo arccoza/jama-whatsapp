@@ -4,6 +4,7 @@ import (
 	// "encoding/json"
 	nanoid "github.com/matoous/go-nanoid/v2"
 	"cloud.google.com/go/firestore"
+	whatsapp "github.com/Rhymen/go-whatsapp"
 )
 
 type Status int
@@ -141,11 +142,16 @@ type Integration struct {
 	Org      string `json:"-" firestore:"-"`
 	Name     string `json:"name" firestore:"name"`
 	Owner    string `json:"owner" firestore:"owner"`
+	ExID     string `json:"exId" firestore:"exId"`
 	Provider string `json:"provider" firestore:"provider"`
 	Kind     string `json:"kind" firestore:"kind"`
-	QRValue  string `json:"qrValue" firestore:"qrValue"`
-	Session  string `json:"session" firestore:"session"`
 	ref      *firestore.DocumentRef `json:"-" firestore:"-"`
+	Whatsapp *WhatsAppIntegration `json:"whatsapp" firestore:"whatsapp"`
+}
+
+type WhatsAppIntegration struct {
+	QRValue  string `json:"qrValue" firestore:"qrValue"`
+	Session  whatsapp.Session `json:"session" firestore:"session"`
 }
 
 type Connector interface {
