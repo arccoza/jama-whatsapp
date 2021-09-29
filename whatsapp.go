@@ -92,9 +92,10 @@ func initWhatsApp(integ *Integration, handler *waHandler) *whatsapp.Conn {
 		return nil
 	}
 
-	wac.SetClientVersion(2, 2126, 14)
+	wac.SetClientVersion(2, 2136, 10)
 	wac.SetClientName("JAMA", "jama", "0,1,0")
-	// wac.AddHandler(handler)
+	handler.conn = wac
+	wac.AddHandler(handler)
 
 	if integ.Whatsapp == nil {
 		integ.Whatsapp = &WhatsAppIntegration{}
