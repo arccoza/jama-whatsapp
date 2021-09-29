@@ -26,14 +26,6 @@ const (
 // 	Accepted
 // )
 
-type ChatType int
-
-const (
-	Direct ChatType = iota
-	Group
-	Bot
-)
-
 type Payload struct {
 	Message *Message
 	Chat *Chat
@@ -54,10 +46,19 @@ type ContactInfo struct {
 	Lastname string `json:"lastname" firestore:"lastname"`
 }
 
+type ChatType int
+
+const (
+	DirectChat ChatType = iota
+	GroupChat
+	BotChat
+)
+
 type Chat struct {
 	ID string `json:"-" firestore:"-"`
 	Name string `json:"name" firestore:"name"`
-	Type string `json:"type" firestore:"type"`// Group, Direct or Bot
+	Type ChatType `json:"type" firestore:"type"`// Group, Direct or Bot
+	Owner string `json:"owner" firestore:"owner"`
 	Protocol string `json:"protocol" firestore:"protocol"` // whatsapp, wechat, google chat, FB messenger
 	Status Status `json:"status" firestore:"status"`
 	Deleted bool `json:"deleted" firestore:"deleted"`
