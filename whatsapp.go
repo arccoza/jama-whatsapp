@@ -70,14 +70,16 @@ func (wh *waHandler) HandleChatList(waChats []whatsapp.Chat) {
 
 	for _, waChat := range waChats {
 		typ := GroupChat
-		id := waChat.Jid
+		uid := StripWhatsAppAt(wh.conn.Info.Wid)
+		mid := StripWhatsAppAt(waChat.Jid)
+		id := StripWhatsAppAt(waChat.Jid)
 		owner := ""
 		muted, _ := strconv.ParseBool(waChat.IsMuted)
 		spam, _ := strconv.ParseBool(waChat.IsMarkedSpam)
 		unread, _ := strconv.ParseInt(waChat.Unread, 10, 64)
 		members := map[string]ChatMember {
-			wh.conn.Info.Wid: {
-				ID: wh.conn.Info.Wid,
+			uid: {
+				ID: uid,
 				Role: "",
 				Unread: int(unread),
 				Muted: muted,
@@ -87,30 +89,37 @@ func (wh *waHandler) HandleChatList(waChats []whatsapp.Chat) {
 
 		if !strings.Contains(id, "-") {
 			typ = DirectChat
-			id = wh.conn.Info.Wid + "+" + waChat.Jid
-			owner = wh.conn.Info.Wid
-			members[waChat.Jid] = ChatMember{
-				ID: waChat.Jid,
+			uidNum, _ := strconv.ParseInt(uid, 10, 64)
+			idNum, _ := strconv.ParseInt(id, 10, 64)
+			id = HashIDs([]int{1, int(DirectChat), int(uidNum), int(idNum)})
+			owner = uid
+			members[mid] = ChatMember{
+				ID: mid,
 				Role: "member",
 			}
 		} else {
+			id1, _ := strconv.ParseInt(strings.Split(id, "-")[0], 10, 64)
+			id2, _ := strconv.ParseInt(strings.Split(id, "-")[1], 10, 64)
+			id = HashIDs([]int{1, int(DirectChat), int(id1), int(id2)})
+
 			meta, _ := wh.conn.GetGroupMetaData(waChat.Jid)
-			owner = meta.Owner
+			owner = StripWhatsAppAt(meta.Owner)
 
 			for _, p := range meta.Participants {
+				mid = StripWhatsAppAt(p.ID)
 				role := "member"
 				if p.IsAdmin {
 					role = "admin"
 				}
 
-				if _, ok := members[p.ID]; !ok {
-					members[p.ID] = ChatMember{}
+				if _, ok := members[mid]; !ok {
+					members[mid] = ChatMember{}
 				}
 
-				member := members[p.ID]
-				member.ID = p.ID
+				member := members[mid]
+				member.ID = mid
 				member.Role = role
-				members[p.ID] = member
+				members[mid] = member
 			}
 		}
 
