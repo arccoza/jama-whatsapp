@@ -4,7 +4,10 @@ import (
 	"fmt"
 	"time"
 	"context"
+	"strings"
+	"strconv"
 	whatsapp "github.com/Rhymen/go-whatsapp"
+	"github.com/k0kubun/pp"
 )
 
 type WhatsAppConnector struct {
@@ -50,25 +53,89 @@ func (wh *waHandler) HandleContactMessage(message whatsapp.ContactMessage) {
 	fmt.Println("HandleContactMessage\n", message)
 }
 
-func (wh *waHandler) HandleContactList(contacts []whatsapp.Contact) {
-	fmt.Println("HandleContactList\n", contacts)
+// func (wh *waHandler) HandleContactList(contacts []whatsapp.Contact) {
+// 	fmt.Println("HandleContactList\n", contacts)
+// }
+
+// func (wh *waHandler) HandleNewContact(contact whatsapp.Contact) {
+// 	fmt.Println("HandleNewContact\n", contact)
+// }
+
+// func (wh *waHandler) HandleBatteryMessage(message whatsapp.BatteryMessage) {
+// 	fmt.Println("HandleBatteryMessage\n", message)
+// }
+
+func (wh *waHandler) HandleChatList(waChats []whatsapp.Chat) {
+	chats := make([]Chat, 0, len(waChats))
+
+	for _, waChat := range waChats {
+		typ := GroupChat
+		id := waChat.Jid
+		owner := ""
+		muted, _ := strconv.ParseBool(waChat.IsMuted)
+		spam, _ := strconv.ParseBool(waChat.IsMarkedSpam)
+		unread, _ := strconv.ParseInt(waChat.Unread, 10, 64)
+		members := map[string]ChatMember {
+			wh.conn.Info.Wid: {
+				ID: wh.conn.Info.Wid,
+				Role: "",
+				Unread: int(unread),
+				Muted: muted,
+				Spam: spam,
+			},
+		}
+
+		if !strings.Contains(id, "-") {
+			typ = DirectChat
+			id = wh.conn.Info.Wid + "+" + waChat.Jid
+			owner = wh.conn.Info.Wid
+			members[waChat.Jid] = ChatMember{
+				ID: waChat.Jid,
+				Role: "member",
+			}
+		} else {
+			meta, _ := wh.conn.GetGroupMetaData(waChat.Jid)
+			owner = meta.Owner
+
+			for _, p := range meta.Participants {
+				role := "member"
+				if p.IsAdmin {
+					role = "admin"
+				}
+
+				if _, ok := members[p.ID]; !ok {
+					members[p.ID] = ChatMember{}
+				}
+
+				member := members[p.ID]
+				member.ID = p.ID
+				member.Role = role
+				members[p.ID] = member
+			}
+		}
+
+		// fmt.Println("META: \n", meta)
+
+		chat := Chat{
+			ID: id,
+			Name: waChat.Name,
+			Type: typ,
+			Owner: owner,
+			Protocol: "whatsapp",
+			Members: members,
+		}
+
+		pp.Println("CHAT: \n", chat)
+
+		chats = append(chats, chat)
+	}
+
+	// fmt.Println("HandleChatList\n", chats)
 }
 
-func (wh *waHandler) HandleNewContact(contact whatsapp.Contact) {
-	fmt.Println("HandleNewContact\n", contact)
-}
-
-func (wh *waHandler) HandleBatteryMessage(message whatsapp.BatteryMessage) {
-	fmt.Println("HandleBatteryMessage\n", message)
-}
-
-func (wh *waHandler) HandleChatList(chats []whatsapp.Chat) {
-	fmt.Println("HandleChatList\n", chats)
-}
-
-func (wh *waHandler) HandleTextMessage(message whatsapp.TextMessage) {
-	fmt.Println("HandleTextMessage\n", message)
-}
+// func (wh *waHandler) HandleTextMessage(message whatsapp.TextMessage) {
+// 	fmt.Println("HandleTextMessage\n", message)
+// }
 
 // func (wh *waHandler) HandleImageMessage(message whatsapp.ImageMessage) {
 // 	fmt.Println("HandleImageMessage\n", message)
