@@ -7,6 +7,9 @@ import (
 	"os"
 	"reflect"
 	"fmt"
+	"crypto/md5"
+	hashids "github.com/speps/go-hashids/v2"
+	"strings"
 )
 
 func qrToURI(val string) string {
@@ -91,4 +94,32 @@ func FromMap(s interface{}, m map[string]interface{}, tagName string) error {
 	}
 
 	return nil
+}
+
+func HashString(s string) [md5.Size]byte {
+	return md5.Sum([]byte(s))
+}
+
+func HashIDs(ids []int) string {
+	hd := hashids.NewData()
+	hd.Salt = "this is my salt"
+	hd.MinLength = 28
+	h, _ := hashids.NewWithData(hd)
+	e, _ := h.Encode(ids)
+	// fmt.Println(e)
+	return e
+}
+
+func UnhashIDs(e string) []int {
+	hd := hashids.NewData()
+	hd.Salt = "this is my salt"
+	hd.MinLength = 28
+	h, _ := hashids.NewWithData(hd)
+	d, _ := h.DecodeWithError(e)
+	// fmt.Println(d)
+	return d
+}
+
+func StripWhatsAppAt(s string) string {
+	return strings.Split(s, "@")[0]
 }
