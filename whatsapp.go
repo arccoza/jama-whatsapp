@@ -104,18 +104,18 @@ func (wh *waHandler) HandleChatList(waChats []whatsapp.Chat) {
 
 		if !strings.Contains(id, "-") {
 			typ = DirectChat
-			uidNum, _ := strconv.ParseInt(uid, 10, 64)
-			idNum, _ := strconv.ParseInt(id, 10, 64)
-			id = HashIDs([]int{1, int(DirectChat), int(uidNum), int(idNum)})
+			uidNum, _ := strconv.Atoi(uid)
+			idNum, _ := strconv.Atoi(id)
+			id = HashIDs([]int{1, int(DirectChat), uidNum, idNum})
 			owner = uid
 			members[mid] = ChatMember{
 				ID: mid,
 				Role: "member",
 			}
 		} else {
-			id1, _ := strconv.ParseInt(strings.Split(id, "-")[0], 10, 64)
-			id2, _ := strconv.ParseInt(strings.Split(id, "-")[1], 10, 64)
-			id = HashIDs([]int{1, int(DirectChat), int(id1), int(id2)})
+			id1, _ := strconv.Atoi(strings.Split(id, "-")[0])
+			id2, _ := strconv.Atoi(strings.Split(id, "-")[1])
+			id = HashIDs([]int{1, int(DirectChat), id1, id2})
 
 			meta, _ := wh.conn.GetGroupMetaData(waChat.Jid)
 			owner = StripWhatsAppAt(meta.Owner)
