@@ -153,9 +153,17 @@ func (wh *waHandler) HandleChatList(waChats []whatsapp.Chat) {
 	wh.notify(Payload{Chats: chats})
 }
 
-// func (wh *waHandler) HandleTextMessage(message whatsapp.TextMessage) {
-// 	fmt.Println("HandleTextMessage\n", message)
-// }
+func (wh *waHandler) HandleTextMessage(waMsg whatsapp.TextMessage) {
+	msg := &Message{}
+	msg.fromWhatsApp(waMsg.Info)
+	msg.Text = waMsg.Text
+
+	pay := Payload{Messages: []Message{*msg}}
+	// fmt.Println("\nHandleTextMessage")
+	// fmt.Printf("%+v\n", waMsg)
+
+	wh.notify(pay)
+}
 
 // func (wh *waHandler) HandleImageMessage(message whatsapp.ImageMessage) {
 // 	fmt.Println("HandleImageMessage\n", message)
