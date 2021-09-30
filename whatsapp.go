@@ -138,8 +138,6 @@ func (wh *waHandler) HandleChatList(waChats []whatsapp.Chat) {
 			}
 		}
 
-		// fmt.Println("META: \n", meta)
-
 		chat := Chat{
 			ID: id,
 			Name: waChat.Name,
@@ -149,12 +147,10 @@ func (wh *waHandler) HandleChatList(waChats []whatsapp.Chat) {
 			Members: members,
 		}
 
-		pp.Println("CHAT: \n", chat)
-
 		chats = append(chats, chat)
 	}
 
-	// fmt.Println("HandleChatList\n", chats)
+	wh.notify(Payload{Chats: chats})
 }
 
 // func (wh *waHandler) HandleTextMessage(message whatsapp.TextMessage) {
