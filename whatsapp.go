@@ -12,12 +12,21 @@ import (
 
 type WhatsAppConnector struct {
 	conn *whatsapp.Conn
+	subscribers map[*Handler]Handler
 }
 
 func NewWhatsAppConnector(integ *Integration) *WhatsAppConnector {
-	return &WhatsAppConnector{
-		conn: initWhatsApp(integ, &waHandler{}),
+	c := &WhatsAppConnector{
+		subscribers: map[*Handler]Handler{},
 	}
+
+	c.conn = initWhatsApp(integ, &waHandler{
+		notify: func(pay Payload) {
+			c.notify(pay)
+		},
+	})
+
+	return c
 }
 
 func (c WhatsAppConnector) Publish(pay Payload) {
@@ -25,11 +34,17 @@ func (c WhatsAppConnector) Publish(pay Payload) {
 }
 
 func (c WhatsAppConnector) Subscribe(fn Handler) {
-
+	c.subscribers[&fn] = fn
 }
 
 func (c WhatsAppConnector) Unsubscribe(fn Handler) {
 
+}
+
+func (c *WhatsAppConnector) notify(pay Payload) {
+	for _, fn := range c.subscribers {
+		fn(pay)
+	}
 }
 
 func (c WhatsAppConnector) Query(q string) []Payload {
@@ -38,7 +53,7 @@ func (c WhatsAppConnector) Query(q string) []Payload {
 
 type waHandler struct {
 	conn *whatsapp.Conn
-	pub func(pay Payload)
+	notify func(pay Payload)
 }
 
 func (wh *waHandler) HandleError(err error) {
