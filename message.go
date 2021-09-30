@@ -110,6 +110,10 @@ func (m *Message) toWhatsApp() interface{} {
 	return waMsg
 }
 
+type MessageContext struct {
+
+}
+
 type Attachment struct {
 	ID string `json:"id" firestore:"id"`
 	Type int `json:"type" firestore:"type"`
