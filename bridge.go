@@ -63,10 +63,10 @@ func (bm *BridgeManager) Listen() {
 
 func (bm *BridgeManager) addBridge(integ *Integration) {
 	a := JamaConnector{}
-	b := WhatsAppConnector{}
+	b := NewWhatsAppConnector(integ)
 
-	bm.bridges[integ.ID] = Bridge{&a, &b}
-	fmt.Println("Added: \n", bm.bridges[integ.ID].A, integ)
+	bm.bridges[integ.ID] = Bridge{&a, b}
+	// fmt.Println("Added: \n", bm.bridges[integ.ID].A, integ)
 }
 
 func (bm *BridgeManager) modBridge(integ *Integration) {
