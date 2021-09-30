@@ -88,6 +88,7 @@ type Message struct {
 func (m *Message) fromWhatsApp(info whatsapp.MessageInfo) {
 	m.ID = info.Id
 	m.Timestamp = info.Timestamp
+	m.Protocol = "whatsapp"
 	m.From = info.SenderJid
 	m.To = info.RemoteJid
 	m.Status = Status(info.Status)
