@@ -85,13 +85,23 @@ type Message struct {
 	Attachments []Attachment `json:"attachments" firestore:"attachments"`
 }
 
-func (m *Message) fromWhatsApp(info whatsapp.MessageInfo) {
+func (m *Message) fromWhatsAppMessageInfo(info whatsapp.MessageInfo) {
 	m.ID = info.Id
 	m.Timestamp = info.Timestamp
 	m.Protocol = "whatsapp"
 	m.From = info.SenderJid
 	m.To = info.RemoteJid
 	m.Status = Status(info.Status)
+}
+
+func (m *Message) fromWhatsApp(waMsgIf interface{}) {
+	switch waMsg := waMsgIf.(type) {
+	case whatsapp.TextMessage:
+		m.fromWhatsAppMessageInfo(waMsg.Info)
+		m.Text = waMsg.Text
+	default:
+		// noop
+	}
 }
 
 func (m *Message) toWhatsApp() interface{} {
