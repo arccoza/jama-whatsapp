@@ -94,6 +94,22 @@ func (m *Message) fromWhatsApp(info whatsapp.MessageInfo) {
 	m.Status = Status(info.Status)
 }
 
+func (m *Message) toWhatsApp() interface{} {
+	info := whatsapp.MessageInfo{
+		Id: m.ID,
+		Timestamp: m.Timestamp,
+		SenderJid: m.From,
+		RemoteJid: m.To,
+	}
+
+	waMsg := whatsapp.TextMessage{
+		Info: info,
+		Text: m.Text,
+	}
+
+	return waMsg
+}
+
 type Attachment struct {
 	ID string `json:"id" firestore:"id"`
 	Type int `json:"type" firestore:"type"`
