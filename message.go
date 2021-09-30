@@ -85,6 +85,14 @@ type Message struct {
 	Attachments []Attachment `json:"attachments" firestore:"attachments"`
 }
 
+func (m *Message) fromWhatsApp(info whatsapp.MessageInfo) {
+	m.ID = info.Id
+	m.Timestamp = info.Timestamp
+	m.From = info.SenderJid
+	m.To = info.RemoteJid
+	m.Status = Status(info.Status)
+}
+
 type Attachment struct {
 	ID string `json:"id" firestore:"id"`
 	Type int `json:"type" firestore:"type"`
