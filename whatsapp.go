@@ -7,7 +7,7 @@ import (
 	"strings"
 	"strconv"
 	whatsapp "github.com/Rhymen/go-whatsapp"
-	"github.com/k0kubun/pp"
+	// "github.com/k0kubun/pp"
 )
 
 type WhatsAppConnector struct {
