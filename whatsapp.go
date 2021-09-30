@@ -30,7 +30,9 @@ func NewWhatsAppConnector(integ *Integration) *WhatsAppConnector {
 }
 
 func (c WhatsAppConnector) Publish(pay Payload) {
-
+	for _, msg := range pay.Messages {
+		c.conn.Send(msg.toWhatsApp())
+	}
 }
 
 func (c WhatsAppConnector) Subscribe(fn Handler) {
@@ -158,8 +160,8 @@ func (wh *waHandler) HandleTextMessage(waMsg whatsapp.TextMessage) {
 	msg.fromWhatsApp(waMsg)
 
 	pay := Payload{Messages: []Message{*msg}}
-	fmt.Println("\nHandleTextMessage")
-	fmt.Printf("%+v\n", pay)
+	// fmt.Printf("\nHandleTextMessage\n")
+	// fmt.Printf("%+v\n", waMsg)
 
 	wh.notify(pay)
 }
