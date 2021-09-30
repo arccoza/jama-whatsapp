@@ -75,7 +75,7 @@ type ChatMember struct {
 
 type Message struct {
 	ID string `json:"-" firestore:"-"`
-	Timestamp int64 `json:"timestamp" firestore:"timestamp"`
+	Timestamp uint64 `json:"timestamp" firestore:"timestamp"`
 	Protocol string `json:"protocol" firestore:"protocol"` // whatsapp, wechat, google chat, FB messenger
 	From string `json:"from" firestore:"from"`
 	To string `json:"to" firestore:"to"`
