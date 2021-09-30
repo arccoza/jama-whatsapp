@@ -91,14 +91,14 @@ func (wh *waHandler) HandleChatList(waChats []whatsapp.Chat) {
 		owner := ""
 		muted, _ := strconv.ParseBool(waChat.IsMuted)
 		spam, _ := strconv.ParseBool(waChat.IsMarkedSpam)
-		unread, _ := strconv.ParseInt(waChat.Unread, 10, 64)
+		unread, _ := strconv.Atoi(waChat.Unread)
 		members := map[string]ChatMember {
 			uid: {
 				ID: uid,
 				Role: "",
-				Unread: int(unread),
-				Muted: muted,
-				Spam: spam,
+				Unread: &unread,
+				Muted: &muted,
+				Spam: &spam,
 			},
 		}
 

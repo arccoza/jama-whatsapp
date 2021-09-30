@@ -68,9 +68,9 @@ type Chat struct {
 type ChatMember struct {
 	ID string `json:"id" firestore:"id"`
 	Role string `json:"role" firestore:"role"`
-	Unread int `json:"unread" firestore:"unread"`
-	Muted bool `json:"muted" firestore:"muted"`
-	Spam bool `json:"spam" firestore:"spam"`
+	Unread *int `json:"unread,omitempty" firestore:"unread,omitempty"`
+	Muted *bool `json:"muted,omitempty" firestore:"muted,omitempty"`
+	Spam *bool `json:"spam,omitempty" firestore:"spam,omitempty"`
 }
 
 type Message struct {
