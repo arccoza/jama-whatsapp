@@ -50,11 +50,11 @@ func NewJamaConnector(
 
 func (c *JamaConnector) Publish(pay Payload) {
 
-	if chat := pay.Chat; chat != nil {
+	for _. chat := range pay.Chats {
 		c.chats.Doc(chat.ID).Set(c.ctx, chat)
 	}
 
-	if msg := pay.Message; msg != nil {
+	for _. msg := range pay.Messages {
 		c.messages.Doc(msg.ID).Set(c.ctx, msg)
 	}
 }
