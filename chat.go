@@ -50,7 +50,6 @@ func (c *Chat) fromWhatsApp(waChat whatsapp.Chat, wac *whatsapp.Conn) error {
 	mid := cid // Member id
 
 	c.Name = waChat.Name
-	c.Owner = uid
 	c.Protocol = "whatsapp"
 
 	muted, _ := strconv.ParseBool(waChat.IsMuted)
@@ -71,6 +70,7 @@ func (c *Chat) fromWhatsApp(waChat whatsapp.Chat, wac *whatsapp.Conn) error {
 	if !strings.Contains(cid, "@g.us") {
 		c.Type = DirectChat
 		c.ID = genChatId(1, int(DirectChat), []string{uid, cid})
+		c.Owner = uid
 
 		c.Members[mid] = ChatMember{
 			ID: mid,
