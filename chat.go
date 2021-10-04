@@ -44,7 +44,7 @@ type ChatMember struct {
 	Spam *bool `json:"spam,omitempty" firestore:"spam,omitempty"`
 }
 
-func (c *Chat) fromWhatsApp(waChat whatsapp.Chat, wac *whatsapp.Conn) {
+func (c *Chat) fromWhatsApp(waChat whatsapp.Chat, wac *whatsapp.Conn) error {
 	cid := EnforceWhatsAppIdFormat(waChat.Jid) // Chat id
 	uid := wac.Info.Wid // User id
 	mid := cid // Member id
@@ -79,7 +79,33 @@ func (c *Chat) fromWhatsApp(waChat whatsapp.Chat, wac *whatsapp.Conn) {
 	} else { // If it's a group chat
 		c.Type = GroupChat
 		c.ID = genChatId(1, int(GroupChat), strings.Split(cid, "-"))
+
+		if meta, err := wac.GetGroupMetaData(waChat.Jid); err != nil {
+			return err
+		} else {
+			c.Owner = EnforceWhatsAppIdFormat(meta.Owner)
+
+			for _, p := range meta.Participants {
+				mid = EnforceWhatsAppIdFormat(p.ID)
+
+				if _, ok := c.Members[mid]; !ok {
+					c.Members[mid] = ChatMember{}
+				}
+
+				member := c.Members[mid]
+				member.ID = mid
+				member.Role = "member"
+
+				if p.IsAdmin {
+					member.Role = "admin"
+				}
+
+				c.Members[mid] = member
+			}
+		}
 	}
+
+	return nil
 }
 
 func genChatId(prot, typ int, parts []string) string {
