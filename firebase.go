@@ -30,13 +30,13 @@ func initFirebase(ctx context.Context) (*firebase.App, *firestore.Client, *stora
 		log.Fatalln(err)
 	}
 
-	store, err := app.Storage(ctx)
+	fs, err := app.Storage(ctx)
 	if err != nil {
 		log.Fatalln(err)
 	}
 
 	// fmt.Println(app, db)
-	return app, db, store
+	return app, db, fs
 }
 
-var firebaseApp, db, store = initFirebase(ctx)
+var firebaseApp, db, fs = initFirebase(ctx)
