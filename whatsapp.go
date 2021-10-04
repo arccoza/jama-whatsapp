@@ -59,6 +59,10 @@ type waHandler struct {
 	notify func(pay Payload)
 }
 
+func (wh *waHandler) ShouldCallSynchronously() bool {
+	return false
+}
+
 func (wh *waHandler) HandleError(err error) {
 	fmt.Println("WhatsApp Handler error: \n", err)
 }
@@ -96,8 +100,8 @@ func (wh *waHandler) HandleChatList(waChats []whatsapp.Chat) {
 		chats = append(chats, *chat)
 	}
 
-	fmt.Printf("\nHandleChatList\n")
-	fmt.Printf("%+v\n", chats)
+	// fmt.Printf("\nHandleChatList\n")
+	// fmt.Printf("%+v\n", chats)
 
 	wh.notify(Payload{Chats: chats})
 }
