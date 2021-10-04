@@ -118,20 +118,3 @@ func (c *Cache) GetContact(id string) ContactInfo {
 func GenerateID() (string, error) {
 	return nanoid.Generate("0123456789ABCDEF", 32)
 }
-
-type Integration struct {
-	ID       string `json:"-" firestore:"-"`
-	Org      string `json:"-" firestore:"-"`
-	Name     string `json:"name" firestore:"name"`
-	Owner    string `json:"owner" firestore:"owner"`
-	ExID     string `json:"exId" firestore:"exId"`
-	Provider string `json:"provider" firestore:"provider"`
-	Kind     string `json:"kind" firestore:"kind"`
-	ref      *firestore.DocumentRef `json:"-" firestore:"-"`
-	Whatsapp *WhatsAppIntegration `json:"whatsapp" firestore:"whatsapp"`
-}
-
-type WhatsAppIntegration struct {
-	QRValue  string `json:"qrValue" firestore:"qrValue"`
-	Session  whatsapp.Session `json:"session" firestore:"session"`
-}
