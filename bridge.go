@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"cloud.google.com/go/firestore"
 	"context"
+	whatsapp "github.com/Rhymen/go-whatsapp"
 )
 
 type Bridge struct {
