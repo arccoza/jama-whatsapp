@@ -17,29 +17,6 @@ const (
 	Accessed
 )
 
-// type ChatStatus int
-
-// const (
-// 	Error ChatStatus = iota
-// 	Inviting
-// 	Invited
-// 	Accepted
-// )
-
-type Payload struct {
-	Messages []Message
-	Chats []Chat
-	ContactInfos []ContactInfo
-}
-
-type PayloadKind int
-
-const (
-	MessagePayload PayloadKind = iota
-	ChatPayload
-	UserPayload
-)
-
 type ContactInfo struct {
 	ID string `json:"-" firestore:"-"`
 	Firstname string `json:"firstname" firestore:"firstname"`
@@ -112,8 +89,6 @@ type File struct {
 	URL string `json:"url" firestore:"url"`
 }
 
-type Handler func(pay Payload)
-
 type Cache struct {
 	Chats map[string]Chat
 	Contacts map[string]ContactInfo
@@ -165,10 +140,4 @@ type Integration struct {
 type WhatsAppIntegration struct {
 	QRValue  string `json:"qrValue" firestore:"qrValue"`
 	Session  whatsapp.Session `json:"session" firestore:"session"`
-}
-
-type Connector interface {
-	Publish(pay Payload)
-	Subscribe(fn Handler)
-	Query(q string) []Payload
 }
