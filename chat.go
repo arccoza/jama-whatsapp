@@ -3,7 +3,9 @@ package main
 import (
 	// "encoding/json"
 	// "cloud.google.com/go/firestore"
-	// whatsapp "github.com/Rhymen/go-whatsapp"
+	whatsapp "github.com/Rhymen/go-whatsapp"
+	"strings"
+	"strconv"
 )
 
 type ChatType int
@@ -13,6 +15,15 @@ const (
 	GroupChat
 	BotChat
 )
+
+// type ChatStatus int
+
+// const (
+// 	Error ChatStatus = iota
+// 	Inviting
+// 	Invited
+// 	Accepted
+// )
 
 type Chat struct {
 	ID string `json:"-" firestore:"-"`
@@ -31,4 +42,57 @@ type ChatMember struct {
 	Unread *int `json:"unread,omitempty" firestore:"unread,omitempty"`
 	Muted *bool `json:"muted,omitempty" firestore:"muted,omitempty"`
 	Spam *bool `json:"spam,omitempty" firestore:"spam,omitempty"`
+}
+
+func (c *Chat) fromWhatsApp(waChat whatsapp.Chat, wac *whatsapp.Conn) {
+	cid := EnforceWhatsAppIdFormat(waChat.Jid) // Chat id
+	uid := wac.Info.Wid // User id
+	mid := cid // Member id
+
+	c.Name = waChat.Name
+	c.Owner = uid
+	c.Protocol = "whatsapp"
+
+	muted, _ := strconv.ParseBool(waChat.IsMuted)
+	spam, _ := strconv.ParseBool(waChat.IsMarkedSpam)
+	unread, _ := strconv.Atoi(waChat.Unread)
+
+	c.Members = map[string]ChatMember {
+		uid: {
+			ID: uid,
+			Role: "owner",
+			Unread: &unread,
+			Muted: &muted,
+			Spam: &spam,
+		},
+	}
+
+	// If it's a direct chat
+	if !strings.Contains(cid, "@g.us") {
+		c.Type = DirectChat
+		c.ID = genChatId(1, int(DirectChat), []string{uid, cid})
+
+		c.Members[mid] = ChatMember{
+			ID: mid,
+			Role: "member",
+		}
+	} else { // If it's a group chat
+		c.Type = GroupChat
+		c.ID = genChatId(1, int(GroupChat), strings.Split(cid, "-"))
+	}
+}
+
+func genChatId(prot, typ int, parts []string) string {
+	nums := make([]int, 0, 4)
+	nums = append(nums, prot, typ)
+
+	for _, part := range parts {
+		if num, err := strconv.Atoi(StripWhatsAppAt(part)); err != nil {
+			panic(err)
+		} else {
+			nums = append(nums, num)
+		}
+	}
+
+	return HashIDs(nums)
 }
