@@ -4,9 +4,10 @@ import (
 	"fmt"
 	"time"
 	"context"
-	"strings"
-	"strconv"
+	// "strings"
+	// "strconv"
 	whatsapp "github.com/Rhymen/go-whatsapp"
+	// "github.com/Rhymen/go-whatsapp/binary/proto"
 	// "github.com/k0kubun/pp"
 )
 
@@ -90,71 +91,13 @@ func (wh *waHandler) HandleChatList(waChats []whatsapp.Chat) {
 	chats := make([]Chat, 0, len(waChats))
 
 	for _, waChat := range waChats {
-		typ := GroupChat
-		uid := StripWhatsAppAt(wh.conn.Info.Wid)
-		mid := StripWhatsAppAt(waChat.Jid)
-		id := StripWhatsAppAt(waChat.Jid)
-		owner := ""
-		muted, _ := strconv.ParseBool(waChat.IsMuted)
-		spam, _ := strconv.ParseBool(waChat.IsMarkedSpam)
-		unread, _ := strconv.Atoi(waChat.Unread)
-		members := map[string]ChatMember {
-			uid: {
-				ID: uid,
-				Role: "",
-				Unread: &unread,
-				Muted: &muted,
-				Spam: &spam,
-			},
-		}
-
-		if !strings.Contains(id, "-") {
-			typ = DirectChat
-			uidNum, _ := strconv.Atoi(uid)
-			idNum, _ := strconv.Atoi(id)
-			id = HashIDs([]int{1, int(DirectChat), uidNum, idNum})
-			owner = uid
-			members[mid] = ChatMember{
-				ID: mid,
-				Role: "member",
-			}
-		} else {
-			id1, _ := strconv.Atoi(strings.Split(id, "-")[0])
-			id2, _ := strconv.Atoi(strings.Split(id, "-")[1])
-			id = HashIDs([]int{1, int(DirectChat), id1, id2})
-
-			meta, _ := wh.conn.GetGroupMetaData(waChat.Jid)
-			owner = StripWhatsAppAt(meta.Owner)
-
-			for _, p := range meta.Participants {
-				mid = StripWhatsAppAt(p.ID)
-				role := "member"
-				if p.IsAdmin {
-					role = "admin"
-				}
-
-				if _, ok := members[mid]; !ok {
-					members[mid] = ChatMember{}
-				}
-
-				member := members[mid]
-				member.ID = mid
-				member.Role = role
-				members[mid] = member
-			}
-		}
-
-		chat := Chat{
-			ID: id,
-			Name: waChat.Name,
-			Type: typ,
-			Owner: owner,
-			Protocol: "whatsapp",
-			Members: members,
-		}
-
-		chats = append(chats, chat)
+		chat := &Chat{}
+		chat.fromWhatsApp(waChat, wh.conn)
+		chats = append(chats, *chat)
 	}
+
+	fmt.Printf("\nHandleChatList\n")
+	fmt.Printf("%+v\n", chats)
 
 	wh.notify(Payload{Chats: chats})
 }
