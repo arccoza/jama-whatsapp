@@ -17,12 +17,6 @@ const (
 	Accessed
 )
 
-type ContactInfo struct {
-	ID string `json:"-" firestore:"-"`
-	Firstname string `json:"firstname" firestore:"firstname"`
-	Lastname string `json:"lastname" firestore:"lastname"`
-}
-
 type Message struct {
 	ID string `json:"-" firestore:"-"`
 	Timestamp uint64 `json:"timestamp" firestore:"timestamp"`
