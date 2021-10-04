@@ -123,3 +123,7 @@ func UnhashIDs(e string) []int {
 func StripWhatsAppAt(s string) string {
 	return strings.Split(s, "@")[0]
 }
+
+func EnforceWhatsAppIdFormat(id string) string {
+	return strings.Replace(id, "@s.whatsapp.net", "@c.us", 1)
+}
