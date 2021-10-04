@@ -62,6 +62,10 @@ func (wh *waHandler) HandleError(err error) {
 	fmt.Println("WhatsApp Handler error: \n", err)
 }
 
+// func (wh *waHandler) HandleRawMessage(message *proto.WebMessageInfo) {
+
+// }
+
 func (wh *waHandler) HandleJsonMessage(message string) {
 	fmt.Println("HandleJsonMessage\n", message)
 }
