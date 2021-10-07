@@ -34,6 +34,7 @@ type Chat struct {
 	Status Status `json:"status" firestore:"status"`
 	Deleted bool `json:"deleted" firestore:"deleted"`
 	Members map[string]ChatMember `json:"members" firestore:"members"`
+	Timestamp int64 `json:"updated" firestore:"updated"`
 }
 
 type ChatMember struct {
@@ -48,9 +49,11 @@ func (c *Chat) fromWhatsApp(waChat whatsapp.Chat, wac *whatsapp.Conn) error {
 	cid := EnforceWhatsAppIdFormat(waChat.Jid) // Chat id
 	uid := wac.Info.Wid // User id
 	mid := cid // Member id
+	timestamp, _ := strconv.Atoi(waChat.LastMessageTime)
 
 	c.Name = waChat.Name
 	c.Protocol = "whatsapp"
+	c.Timestamp = int64(timestamp)
 
 	muted, _ := strconv.ParseBool(waChat.IsMuted)
 	spam, _ := strconv.ParseBool(waChat.IsMarkedSpam)
