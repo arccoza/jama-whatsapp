@@ -79,12 +79,14 @@ func (wh *waHandler) HandleContactMessage(message whatsapp.ContactMessage) {
 	fmt.Println("HandleContactMessage\n", message)
 }
 
-// func (wh *waHandler) HandleContactList(contacts []whatsapp.Contact) {
-// 	fmt.Println("HandleContactList\n", contacts)
+// func (wh *waHandler) HandleContactList(waContacts []whatsapp.Contact) {
+// 	fmt.Printf("\nHandleContactList\n")
+// 	fmt.Printf("%+v\n", waContacts)
 // }
 
-// func (wh *waHandler) HandleNewContact(contact whatsapp.Contact) {
-// 	fmt.Println("HandleNewContact\n", contact)
+// func (wh *waHandler) HandleNewContact(waContact whatsapp.Contact) {
+// 	fmt.Printf("\nHandleNewContact\n")
+// 	fmt.Printf("%+v\n", waContact)
 // }
 
 // func (wh *waHandler) HandleBatteryMessage(message whatsapp.BatteryMessage) {
