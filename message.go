@@ -19,7 +19,7 @@ const (
 
 type Message struct {
 	ID string `json:"-" firestore:"-"`
-	Timestamp uint64 `json:"timestamp" firestore:"timestamp"`
+	Timestamp int64 `json:"timestamp" firestore:"timestamp"`
 	Protocol string `json:"protocol" firestore:"protocol"` // whatsapp, wechat, google chat, FB messenger
 	From string `json:"from" firestore:"from"`
 	To string `json:"to" firestore:"to"`
@@ -31,7 +31,7 @@ type Message struct {
 
 func (m *Message) fromWhatsAppMessageInfo(info whatsapp.MessageInfo) {
 	m.ID = info.Id
-	m.Timestamp = info.Timestamp
+	m.Timestamp = int64(info.Timestamp)
 	m.Protocol = "whatsapp"
 	m.From = info.SenderJid
 	m.To = info.RemoteJid
@@ -51,7 +51,7 @@ func (m *Message) fromWhatsApp(waMsgIf interface{}) {
 func (m *Message) toWhatsApp() interface{} {
 	info := whatsapp.MessageInfo{
 		Id: m.ID,
-		Timestamp: m.Timestamp,
+		Timestamp: uint64(m.Timestamp),
 		SenderJid: m.From,
 		RemoteJid: m.To,
 	}
