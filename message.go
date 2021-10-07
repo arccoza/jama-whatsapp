@@ -17,6 +17,13 @@ const (
 	Accessed
 )
 
+type Origin int
+
+const (
+	External Origin = iota
+	Internal
+)
+
 type Message struct {
 	ID string `json:"-" firestore:"-"`
 	Timestamp int64 `json:"timestamp" firestore:"timestamp"`
@@ -26,6 +33,7 @@ type Message struct {
 	Text string `json:"text" firestore:"text"`
 	Status Status `json:"status" firestore:"status"` // sending, sent, received, read
 	Deleted bool `json:"deleted" firestore:"deleted"`
+	Origin Origin `json:"origin" firestore:"origin"`
 	Attachments []Attachment `json:"attachments" firestore:"attachments"`
 }
 
