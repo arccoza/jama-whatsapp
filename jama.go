@@ -12,9 +12,9 @@ import (
 
 type JamaConnector struct {
 	ctx         context.Context
-	org         string
+	integ       *Integration
 	db          *firestore.Client
-	store       *storage.Client
+	fs       *storage.Client
 	uid         string
 	protocol    string
 	contacts    *firestore.CollectionRef
@@ -26,36 +26,36 @@ type JamaConnector struct {
 
 func NewJamaConnector(
 		ctx context.Context,
-		org string,
+		integ *Integration,
 		db *firestore.Client,
-		store *storage.Client,
+		fs *storage.Client,
 		uid,
 		protocol string,
 	) *JamaConnector {
 
 	return &JamaConnector{
 		ctx,
-		org,
+		integ,
 		db,
-		store,
+		fs,
 		uid,
 		protocol,
-		db.Collection(fmt.Sprintf("organizations/%s/contacts", org)),
-		db.Collection(fmt.Sprintf("organizations/%s/chats", org)),
-		db.Collection(fmt.Sprintf("organizations/%s/messages", org)),
+		db.Collection(fmt.Sprintf("organizations/%s/contacts", integ.Org)),
+		db.Collection(fmt.Sprintf("organizations/%s/chats", integ.Org)),
+		db.Collection(fmt.Sprintf("organizations/%s/messages", integ.Org)),
 		map[*Handler]Handler{},
 		NewCache(),
 	}
 }
 
 func (c *JamaConnector) Publish(pay Payload) {
-
 	for _, chat := range pay.Chats {
-		c.chats.Doc(chat.ID).Set(c.ctx, chat, firestore.MergeAll)
+		// c.chats.Doc(chat.ID).Set(c.ctx, chat, firestore.MergeAll)
+		_, err := c.chats.Doc(chat.ID).Set(c.ctx, chat)
 	}
 
 	for _, msg := range pay.Messages {
-		c.messages.Doc(msg.ID).Set(c.ctx, msg, firestore.MergeAll)
+		_, err := c.messages.Doc(msg.ID).Set(c.ctx, msg)
 	}
 }
 
