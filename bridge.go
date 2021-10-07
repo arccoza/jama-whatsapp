@@ -67,9 +67,12 @@ func (bm *BridgeManager) addBridge(integ *Integration) {
 	b := NewWhatsAppConnector(integ)
 
 	b.Subscribe(a.Publish)
+	// a.Subscribe(b.Publish)
+
+	a.Start()
 
 	bm.bridges[integ.ID] = Bridge{a, b}
-	// fmt.Println("Added: \n", bm.bridges[integ.ID].A, integ)
+	fmt.Println("Bridge Added: \n", bm.bridges[integ.ID].A, integ)
 }
 
 func (bm *BridgeManager) modBridge(integ *Integration) {
