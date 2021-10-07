@@ -51,11 +51,11 @@ func NewJamaConnector(
 func (c *JamaConnector) Publish(pay Payload) {
 	for _, chat := range pay.Chats {
 		// c.chats.Doc(chat.ID).Set(c.ctx, chat, firestore.MergeAll)
-		_, err := c.chats.Doc(chat.ID).Set(c.ctx, chat)
+		c.chats.Doc(chat.ID).Set(c.ctx, chat)
 	}
 
 	for _, msg := range pay.Messages {
-		_, err := c.messages.Doc(msg.ID).Set(c.ctx, msg)
+		c.messages.Doc(msg.ID).Set(c.ctx, msg)
 	}
 }
 
@@ -73,15 +73,17 @@ func (c *JamaConnector) notify(pay Payload) {
 	}
 }
 
-func (c *JamaConnector) Listen() {
+func (c *JamaConnector) Start() {
 	// cit := c.chats.Where("status", "==", Pending).Snapshots(c.ctx)
 	// mit := c.messages.Where("status", "==", Pending).Snapshots(c.ctx)
-	qm := c.messages.Where("status", "==", Pending)
+	qm := c.messages.Where("status", "==", Pending).Where("origin", "==", Internal)
 
-	c.listen(qm, func(change firestore.DocumentChange){
+	go c.listen(qm, func(change firestore.DocumentChange){
 		switch change.Kind {
 		case firestore.DocumentAdded:
-			fmt.Println("Added: %v\n", change.Doc.Data())
+			msg := &Message{}
+			change.Doc.DataTo(msg)
+			fmt.Println("Added: %v\n", msg)
 		case firestore.DocumentModified:
 			fmt.Println("Modified: %v\n", change.Doc.Data())
 		case firestore.DocumentRemoved:
