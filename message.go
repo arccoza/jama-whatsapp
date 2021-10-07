@@ -3,7 +3,7 @@ package main
 import (
 	// "encoding/json"
 	nanoid "github.com/matoous/go-nanoid/v2"
-	"cloud.google.com/go/firestore"
+	// "cloud.google.com/go/firestore"
 	whatsapp "github.com/Rhymen/go-whatsapp"
 )
 
