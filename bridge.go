@@ -63,10 +63,12 @@ func (bm *BridgeManager) Listen() {
 }
 
 func (bm *BridgeManager) addBridge(integ *Integration) {
-	a := JamaConnector{}
+	a := NewJamaConnector(context.Background(), integ, db, fs, "", "whatsapp")
 	b := NewWhatsAppConnector(integ)
 
-	bm.bridges[integ.ID] = Bridge{&a, b}
+	b.Subscribe(a.Publish)
+
+	bm.bridges[integ.ID] = Bridge{a, b}
 	// fmt.Println("Added: \n", bm.bridges[integ.ID].A, integ)
 }
 
