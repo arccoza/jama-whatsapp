@@ -69,6 +69,7 @@ func (bm *BridgeManager) addBridge(integ *Integration) {
 	b.Subscribe(a.Publish)
 	// a.Subscribe(b.Publish)
 
+	b.Start()
 	a.Start()
 
 	bm.bridges[integ.ID] = Bridge{a, b}
