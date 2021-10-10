@@ -37,7 +37,7 @@ type Chat struct {
 	Name string `json:"name" firestore:"name"`
 	Type ChatType `json:"type" firestore:"type"`// Group, Direct or Bot
 	Owner string `json:"owner" firestore:"owner"`
-	Protocol string `json:"protocol" firestore:"protocol"` // whatsapp, wechat, google chat, FB messenger
+	Protocol ChatProtocol `json:"protocol" firestore:"protocol"` // whatsapp, wechat, google chat, FB messenger
 	Status Status `json:"status" firestore:"status"`
 	Deleted bool `json:"deleted" firestore:"deleted"`
 	Members map[string]ChatMember `json:"members" firestore:"members"`
@@ -59,7 +59,7 @@ func (c *Chat) fromWhatsApp(waChat whatsapp.Chat, wac *whatsapp.Conn) error {
 	timestamp, _ := strconv.Atoi(waChat.LastMessageTime)
 
 	c.Name = waChat.Name
-	c.Protocol = "whatsapp"
+	c.Protocol = WhatsAppProtocol
 	c.Timestamp = int64(timestamp)
 
 	muted, _ := strconv.ParseBool(waChat.IsMuted)
