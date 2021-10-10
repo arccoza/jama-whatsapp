@@ -1,6 +1,7 @@
 package main
 
 import (
+	// "fmt"
 	// "encoding/json"
 	nanoid "github.com/matoous/go-nanoid/v2"
 	// "cloud.google.com/go/firestore"
@@ -38,12 +39,23 @@ type Message struct {
 }
 
 func (m *Message) fromWhatsAppMessageInfo(info whatsapp.MessageInfo) {
+	from, to := "", ""
+	if from = "me"; info.FromMe {
+		to = info.RemoteJid
+	} else if from = info.SenderJid; info.SenderJid != "" {
+		to = info.RemoteJid
+	} else {
+		from = info.RemoteJid
+		to = "me"
+	}
+
 	m.ID = info.Id
 	m.Timestamp = int64(info.Timestamp)
 	m.Protocol = "whatsapp"
-	m.From = info.SenderJid
-	m.To = info.RemoteJid
+	m.From = from
+	m.To = to
 	m.Status = Status(info.Status)
+	// fmt.Println("\nfromWhatsApp\n", from, to, info.FromMe, info.SenderJid, info.RemoteJid)
 }
 
 func (m *Message) fromWhatsApp(waMsgIf interface{}) {
