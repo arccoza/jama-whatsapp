@@ -62,8 +62,8 @@ func (m *Message) fromWhatsAppMessageInfo(info whatsapp.MessageInfo, uid string)
 	m.CID = cid
 	m.Timestamp = int64(info.Timestamp)
 	m.Protocol = "whatsapp"
-	m.From = from
-	m.To = to
+	m.From = NormalizeWhatsAppId(from)
+	m.To = NormalizeWhatsAppId(to)
 	m.Status = Status(info.Status)
 	// fmt.Printf("\nfromWhatsApp\n%+v\n", m)
 	// fmt.Printf("\nfromWhatsApp\n %q %q %q %q %q %q %q", cid, uid, from, to, info.FromMe, info.SenderJid, info.RemoteJid)
