@@ -46,7 +46,7 @@ type ChatMember struct {
 }
 
 func (c *Chat) fromWhatsApp(waChat whatsapp.Chat, wac *whatsapp.Conn) error {
-	cid := EnforceWhatsAppIdFormat(waChat.Jid) // Chat id
+	cid := NormalizeWhatsAppId(waChat.Jid) // Chat id
 	uid := wac.Info.Wid // User id
 	mid := cid // Member id
 	timestamp, _ := strconv.Atoi(waChat.LastMessageTime)
@@ -86,10 +86,10 @@ func (c *Chat) fromWhatsApp(waChat whatsapp.Chat, wac *whatsapp.Conn) error {
 		if meta, err := wac.GetGroupMetaData(waChat.Jid); err != nil {
 			return err
 		} else {
-			c.Owner = EnforceWhatsAppIdFormat(meta.Owner)
+			c.Owner = NormalizeWhatsAppId(meta.Owner)
 
 			for _, p := range meta.Participants {
-				mid = EnforceWhatsAppIdFormat(p.ID)
+				mid = NormalizeWhatsAppId(p.ID)
 
 				if _, ok := c.Members[mid]; !ok {
 					c.Members[mid] = ChatMember{}

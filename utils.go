@@ -124,7 +124,7 @@ func StripWhatsAppAt(s string) string {
 	return strings.Split(s, "@")[0]
 }
 
-func EnforceWhatsAppIdFormat(id string) string {
+func NormalizeWhatsAppId(id string) string {
 	return strings.Replace(id, "@s.whatsapp.net", "@c.us", 1)
 }
 
