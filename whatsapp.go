@@ -12,22 +12,39 @@ import (
 )
 
 type WhatsAppConnector struct {
+	integ *Integration
 	conn *whatsapp.Conn
 	subscribers map[*Handler]Handler
 }
 
 func NewWhatsAppConnector(integ *Integration) *WhatsAppConnector {
 	c := &WhatsAppConnector{
+		integ: integ,
 		subscribers: map[*Handler]Handler{},
 	}
 
-	c.conn = initWhatsApp(integ, &waHandler{
+	// c.conn = initWhatsApp(integ, &waHandler{
+	// 	notify: func(pay Payload) {
+	// 		c.notify(pay)
+	// 	},
+	// })
+
+	return c
+}
+
+func (c WhatsAppConnector) Start() error {
+	conn, err := initWhatsApp(c.integ, &waHandler{
 		notify: func(pay Payload) {
 			c.notify(pay)
 		},
 	})
 
-	return c
+	if err != nil {
+		c.conn = conn
+		return nil
+	}
+
+	return err
 }
 
 func (c WhatsAppConnector) Publish(pay Payload) {
@@ -135,11 +152,11 @@ func (wh *waHandler) HandleTextMessage(waMsg whatsapp.TextMessage) {
 // 	fmt.Println("HandleAudioMessage\n", message)
 // }
 
-func initWhatsApp(integ *Integration, handler *waHandler) *whatsapp.Conn {
-	wac, err := whatsapp.NewConn(2 * time.Second)
+func initWhatsApp(integ *Integration, handler *waHandler) (*whatsapp.Conn, error) {
+	wac, err := whatsapp.NewConn(30 * time.Second)
 	if err != nil {
 		fmt.Println("WhatsApp connect error: \n", err)
-		return nil
+		return nil, err
 	}
 
 	wac.SetClientVersion(2, 2136, 10)
@@ -157,7 +174,7 @@ func initWhatsApp(integ *Integration, handler *waHandler) *whatsapp.Conn {
 			integ.Whatsapp.Session = session
 			integ.ExID = session.Wid
 			integ.ref.Set(context.Background(), integ)
-			return wac
+			return wac, nil
 		}
 	}
 
@@ -174,8 +191,10 @@ func initWhatsApp(integ *Integration, handler *waHandler) *whatsapp.Conn {
 		integ.Whatsapp.Session = session
 		integ.ExID = session.Wid
 		integ.ref.Set(context.Background(), integ)
-		return wac
+		return wac, nil
+	} else {
+		return nil, err
 	}
 
-	return nil
+	return nil, nil
 }
