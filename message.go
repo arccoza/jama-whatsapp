@@ -2,6 +2,7 @@ package main
 
 import (
 	// "fmt"
+	"strings"
 	// "encoding/json"
 	nanoid "github.com/matoous/go-nanoid/v2"
 	// "cloud.google.com/go/firestore"
@@ -27,6 +28,7 @@ const (
 
 type Message struct {
 	ID string `json:"-" firestore:"-"`
+	CID string `json:"cid" firestore:"cid"`
 	Timestamp int64 `json:"timestamp" firestore:"timestamp"`
 	Protocol string `json:"protocol" firestore:"protocol"` // whatsapp, wechat, google chat, FB messenger
 	From string `json:"from" firestore:"from"`
@@ -38,30 +40,39 @@ type Message struct {
 	Attachments []Attachment `json:"attachments" firestore:"attachments"`
 }
 
-func (m *Message) fromWhatsAppMessageInfo(info whatsapp.MessageInfo) {
-	from, to := "", ""
-	if from = "me"; info.FromMe {
+func (m *Message) fromWhatsAppMessageInfo(info whatsapp.MessageInfo, uid string) {
+	cid, from, to := "", "", ""
+
+	if from = uid; info.FromMe {
 		to = info.RemoteJid
 	} else if from = info.SenderJid; info.SenderJid != "" {
 		to = info.RemoteJid
 	} else {
 		from = info.RemoteJid
-		to = "me"
+		to = uid
+	}
+
+	if IsWhatsAppGroup(info.RemoteJid) {
+		cid = genChatId(1, int(GroupChat), strings.Split(info.RemoteJid, "-"))
+	} else {
+		cid = genChatId(1, int(DirectChat), []string{uid, info.RemoteJid})
 	}
 
 	m.ID = info.Id
+	m.CID = cid
 	m.Timestamp = int64(info.Timestamp)
 	m.Protocol = "whatsapp"
 	m.From = from
 	m.To = to
 	m.Status = Status(info.Status)
-	// fmt.Println("\nfromWhatsApp\n", from, to, info.FromMe, info.SenderJid, info.RemoteJid)
+	// fmt.Printf("\nfromWhatsApp\n%+v\n", m)
+	// fmt.Printf("\nfromWhatsApp\n %q %q %q %q %q %q %q", cid, uid, from, to, info.FromMe, info.SenderJid, info.RemoteJid)
 }
 
-func (m *Message) fromWhatsApp(waMsgIf interface{}) {
+func (m *Message) fromWhatsApp(waMsgIf interface{}, wac *whatsapp.Conn) {
 	switch waMsg := waMsgIf.(type) {
 	case whatsapp.TextMessage:
-		m.fromWhatsAppMessageInfo(waMsg.Info)
+		m.fromWhatsAppMessageInfo(waMsg.Info, wac.Info.Wid)
 		m.Text = waMsg.Text
 	default:
 		// noop

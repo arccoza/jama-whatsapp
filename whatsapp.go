@@ -127,7 +127,7 @@ func (wh *waHandler) HandleChatList(waChats []whatsapp.Chat) {
 
 func (wh *waHandler) HandleTextMessage(waMsg whatsapp.TextMessage) {
 	msg := &Message{}
-	msg.fromWhatsApp(waMsg)
+	msg.fromWhatsApp(waMsg, wh.conn)
 
 	pay := Payload{Messages: []Message{*msg}}
 	// fmt.Printf("\nHandleTextMessage\n")
