@@ -127,3 +127,7 @@ func StripWhatsAppAt(s string) string {
 func EnforceWhatsAppIdFormat(id string) string {
 	return strings.Replace(id, "@s.whatsapp.net", "@c.us", 1)
 }
+
+func IsWhatsAppGroup(id string) bool {
+	return strings.Contains(id, "@g.us")
+}
