@@ -97,6 +97,7 @@ type Integration struct {
 	Name     string `json:"name" firestore:"name"`
 	Owner    string `json:"owner" firestore:"owner"`
 	ExID     string `json:"exId" firestore:"exId"`
+	InID     string `json:"inId" firestore:"inId"`
 	Provider string `json:"provider" firestore:"provider"`
 	Kind     string `json:"kind" firestore:"kind"`
 	ref      *firestore.DocumentRef `json:"-" firestore:"-"`
