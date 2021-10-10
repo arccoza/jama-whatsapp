@@ -53,9 +53,9 @@ func (m *Message) fromWhatsAppMessageInfo(info whatsapp.MessageInfo, uid string)
 	}
 
 	if IsWhatsAppGroup(info.RemoteJid) {
-		cid = genChatId(1, int(GroupChat), strings.Split(info.RemoteJid, "-"))
+		cid = genChatId(int(WhatsAppProtocol), int(GroupChat), strings.Split(info.RemoteJid, "-"))
 	} else {
-		cid = genChatId(1, int(DirectChat), []string{uid, info.RemoteJid})
+		cid = genChatId(int(WhatsAppProtocol), int(DirectChat), []string{uid, info.RemoteJid})
 	}
 
 	m.ID = info.Id

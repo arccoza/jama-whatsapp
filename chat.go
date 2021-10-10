@@ -25,6 +25,13 @@ const (
 // 	Accepted
 // )
 
+type ChatProtocol int
+
+const (
+	UnknownProtocol ChatProtocol = iota
+	WhatsAppProtocol
+)
+
 type Chat struct {
 	ID string `json:"-" firestore:"-"`
 	Name string `json:"name" firestore:"name"`
@@ -72,7 +79,7 @@ func (c *Chat) fromWhatsApp(waChat whatsapp.Chat, wac *whatsapp.Conn) error {
 	// If it's a direct chat
 	if !strings.Contains(cid, "@g.us") {
 		c.Type = DirectChat
-		c.ID = genChatId(1, int(DirectChat), []string{uid, cid})
+		c.ID = genChatId(int(WhatsAppProtocol), int(DirectChat), []string{uid, cid})
 		c.Owner = uid
 
 		c.Members[mid] = ChatMember{
@@ -81,7 +88,7 @@ func (c *Chat) fromWhatsApp(waChat whatsapp.Chat, wac *whatsapp.Conn) error {
 		}
 	} else { // If it's a group chat
 		c.Type = GroupChat
-		c.ID = genChatId(1, int(GroupChat), strings.Split(cid, "-"))
+		c.ID = genChatId(int(WhatsAppProtocol), int(GroupChat), strings.Split(cid, "-"))
 
 		if meta, err := wac.GetGroupMetaData(waChat.Jid); err != nil {
 			return err
