@@ -52,7 +52,7 @@ func (bm *BridgeManager) Listen() {
 
 			switch change.Kind {
 			case firestore.DocumentAdded:
-				bm.addBridge(integ)
+				go bm.addBridge(integ)
 			case firestore.DocumentModified:
 				bm.modBridge(integ)
 			case firestore.DocumentRemoved:
@@ -69,7 +69,10 @@ func (bm *BridgeManager) addBridge(integ *Integration) {
 	b.Subscribe(a.Publish)
 	// a.Subscribe(b.Publish)
 
-	b.Start()
+	if err := b.Start(); err != nil {
+		fmt.Println("Error starting Connector: \n", err)
+		return
+	}
 	a.Start()
 
 	bm.bridges[integ.ID] = Bridge{a, b}
