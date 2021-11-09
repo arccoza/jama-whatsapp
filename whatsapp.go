@@ -40,11 +40,11 @@ func (c WhatsAppConnector) Start() error {
 	})
 
 	if err != nil {
-		c.conn = conn
-		return nil
+		return err
 	}
 
-	return err
+	c.conn = conn
+	return nil
 }
 
 func (c WhatsAppConnector) Publish(pay Payload) {
@@ -128,6 +128,7 @@ func (wh *waHandler) HandleChatList(waChats []whatsapp.Chat) {
 func (wh *waHandler) HandleTextMessage(waMsg whatsapp.TextMessage) {
 	msg := &Message{}
 	msg.fromWhatsApp(waMsg, wh.conn)
+	fmt.Println("HandleTextMessage\n", waMsg)
 
 	pay := Payload{Messages: []Message{*msg}}
 	// fmt.Printf("\nHandleTextMessage\n")
