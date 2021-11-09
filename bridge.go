@@ -105,9 +105,15 @@ type Integration struct {
 	Kind     string `json:"kind" firestore:"kind"`
 	ref      *firestore.DocumentRef `json:"-" firestore:"-"`
 	Whatsapp *WhatsAppIntegration `json:"whatsapp" firestore:"whatsapp"`
+	Timestamps *Timestamps `json:"timestamps" firestore:"timestamps"`
 }
 
 type WhatsAppIntegration struct {
 	QRValue  string `json:"qrValue" firestore:"qrValue"`
 	Session  whatsapp.Session `json:"session" firestore:"session"`
+}
+
+type Timestamps struct {
+	Created int64 `json:"created" firestore:"created"`
+	Updated int64 `json:"updated" firestore:"updated"`
 }
