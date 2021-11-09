@@ -194,6 +194,8 @@ func initWhatsApp(integ *Integration, handler *waHandler) (*whatsapp.Conn, error
 		integ.ref.Set(context.Background(), integ)
 		return wac, nil
 	} else {
+		integ.Whatsapp.QRValue = ""
+		integ.ref.Set(context.Background(), integ)
 		return nil, err
 	}
 
