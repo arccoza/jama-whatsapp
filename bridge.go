@@ -54,9 +54,9 @@ func (bm *BridgeManager) Listen() {
 			case firestore.DocumentAdded:
 				go bm.addBridge(integ)
 			case firestore.DocumentModified:
-				bm.modBridge(integ)
+				go bm.modBridge(integ)
 			case firestore.DocumentRemoved:
-				bm.remBridge(integ)
+				go bm.remBridge(integ)
 			}
 		}
 	}
@@ -80,7 +80,9 @@ func (bm *BridgeManager) addBridge(integ *Integration) {
 }
 
 func (bm *BridgeManager) modBridge(integ *Integration) {
-	// bridge := bm.bridges[integ.ID]
+	if integ.Whatsapp == nil {
+		bm.addBridge(integ)
+	}
 }
 
 func (bm *BridgeManager) remBridge(integ *Integration) {
