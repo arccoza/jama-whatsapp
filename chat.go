@@ -34,6 +34,7 @@ const (
 
 type Chat struct {
 	ID string `json:"-" firestore:"-"`
+	UID string `json:"uid" firestore:"uid"`
 	ExID string `json:"exId" firestore:"exId"`
 	Name string `json:"name" firestore:"name"`
 	Type ChatType `json:"type" firestore:"type"`// Group, Direct or Bot

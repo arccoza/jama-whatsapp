@@ -75,6 +75,7 @@ func (c WhatsAppConnector) Query(q string) []Payload {
 
 type waHandler struct {
 	conn *whatsapp.Conn
+	integ *Integration
 	notify func(pay Payload)
 }
 
@@ -145,7 +146,7 @@ func (wh *waHandler) HandleChatList(waChats []whatsapp.Chat) {
 	chats := make([]Chat, 0, len(waChats))
 
 	for _, waChat := range waChats {
-		chat := &Chat{}
+		chat := &Chat{UID: wh.integ.InID}
 		chat.fromWhatsApp(waChat, wh.conn)
 		chats = append(chats, *chat)
 	}
@@ -193,6 +194,7 @@ func initWhatsApp(integ *Integration, handler *waHandler) (*whatsapp.Conn, error
 	wac.SetClientVersion(2, 2136, 10)
 	wac.SetClientName("JAMA", "jama", "0,1,0")
 	handler.conn = wac
+	handler.integ = integ
 	wac.AddHandler(handler)
 
 	if integ.Whatsapp == nil {
