@@ -21,7 +21,7 @@ type WhatsAppContact struct {
 	ID string `json:"id" firestore:"id"`
 	Name string `json:"name" firestore:"name"`
 	Phone string `json:"phone" firestore:"phone"`
-	Avatar string `json:"avatar" firestore:"avatar"`
+	Avatar string `json:"avatar,omitempty" firestore:"avatar,omitempty"`
 }
 
 func (c *Contact) fromWhatsApp(waContact whatsapp.Contact) {
