@@ -57,6 +57,10 @@ func (c *JamaConnector) Publish(pay Payload) {
 	for _, msg := range pay.Messages {
 		c.messages.Doc(msg.ID).Set(c.ctx, msg)
 	}
+
+	for _, contact := range pay.Contacts {
+		c.contacts.Doc(contact.ID).Set(c.ctx, contact)
+	}
 }
 
 func (c *JamaConnector) Subscribe(fn Handler) {
