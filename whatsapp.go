@@ -10,7 +10,7 @@ import (
 	// "github.com/Rhymen/go-whatsapp/binary/proto"
 	// "github.com/k0kubun/pp"
 	"sync"
-	"encoding/json"
+	// "encoding/json"
 )
 
 type WhatsAppConnector struct {
@@ -114,18 +114,11 @@ func (wh *waHandler) HandleContactList(waContacts []whatsapp.Contact) {
 		contact := &Contact{}
 		contact.fromWhatsApp(waContact)
 		contacts = append(contacts, *contact)
-		ch, _ := wh.conn.GetProfilePicThumb(waContact.Jid)
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			for str := range ch {
-				var dat map[string]interface{}
-				json.Unmarshal([]byte(str), &dat)
-				if url, _ := dat["eurl"]; url != nil {
-					contact.WhatsApp.Avatar = url.(string)
-				}
-				// fmt.Println(contact)
-			}
+			pic, _ := wh.conn.GetProfilePicThumb(waContact.Jid)
+			contact.WhatsApp.Avatar = pic.URL
 		}()
 	}
 
