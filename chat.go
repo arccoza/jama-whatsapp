@@ -44,6 +44,7 @@ type Chat struct {
 	Deleted bool `json:"deleted" firestore:"deleted"`
 	Members map[string]ChatMember `json:"members" firestore:"members"`
 	Timestamp int64 `json:"updated" firestore:"updated"`
+	Avatar string `json:"avatar,omitempty" firestore:"avatar,omitempty"`
 }
 
 type ChatMember struct {
