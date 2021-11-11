@@ -55,7 +55,7 @@ type ChatMember struct {
 
 func (c *Chat) fromWhatsApp(waChat whatsapp.Chat, wac *whatsapp.Conn) error {
 	cid := NormalizeWhatsAppId(waChat.Jid) // Chat id
-	uid := wac.Info.Wid // User id
+	wid := wac.Info.Wid // User id
 	mid := cid // Member id
 	timestamp, _ := strconv.Atoi(waChat.LastMessageTime)
 
@@ -69,8 +69,8 @@ func (c *Chat) fromWhatsApp(waChat whatsapp.Chat, wac *whatsapp.Conn) error {
 	unread, _ := strconv.Atoi(waChat.Unread)
 
 	c.Members = map[string]ChatMember {
-		uid: {
-			ID: uid,
+		wid: {
+			ID: wid,
 			Role: "owner",
 			Unread: &unread,
 			Muted: &muted,
@@ -81,8 +81,8 @@ func (c *Chat) fromWhatsApp(waChat whatsapp.Chat, wac *whatsapp.Conn) error {
 	// If it's a direct chat
 	if !strings.Contains(cid, "@g.us") {
 		c.Type = DirectChat
-		c.ID = genChatId(int(WhatsAppProtocol), int(DirectChat), []string{uid, cid})
-		c.Owner = uid
+		c.ID = genChatId(int(WhatsAppProtocol), int(DirectChat), []string{wid, cid})
+		c.Owner = wid
 
 		c.Members[mid] = ChatMember{
 			ID: mid,
