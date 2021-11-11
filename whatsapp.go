@@ -102,10 +102,10 @@ func (wh *waHandler) HandleContactMessage(message whatsapp.ContactMessage) {
 func (wh *waHandler) HandleContactList(waContacts []whatsapp.Contact) {
 	// fmt.Printf("\nHandleContactList\n")
 	// fmt.Printf("%+v\n", waContacts)
-	contacts := make([]Contact, 0, len(waContacts))
+	contacts := make([]Contact, len(waContacts))
 	var wg sync.WaitGroup
 
-	for _, waContact := range waContacts {
+	for i, waContact := range waContacts {
 		// There's a contact for broadcast? Just skip it.
 		if waContact.Jid == "status@broadcast" {
 			continue
@@ -113,15 +113,18 @@ func (wh *waHandler) HandleContactList(waContacts []whatsapp.Contact) {
 
 		contact := &Contact{}
 		contact.fromWhatsApp(waContact)
-		contacts = append(contacts, *contact)
+		// contacts = append(contacts, *contact)
+		contacts[i] = *contact
 		wg.Add(1)
-		go func() {
+		go func(i int, jid string) {
 			defer wg.Done()
-			pic, _ := wh.conn.GetProfilePicThumb(waContact.Jid)
-			contact.WhatsApp.Avatar = pic.URL
-		}()
+			time.Sleep(1 * time.Second)
+			pic, _ := wh.conn.GetProfilePicThumb(jid)
+			contacts[i].WhatsApp.Avatar = pic.URL
+		}(i, waContact.Jid)
 	}
 
+	wh.notify(Payload{Contacts: contacts})
 	wg.Wait()
 	wh.notify(Payload{Contacts: contacts})
 }
