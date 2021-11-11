@@ -9,7 +9,7 @@ import (
 type Payload struct {
 	Messages []Message
 	Chats []Chat
-	ContactInfos []ContactInfo
+	Contacts []Contact
 }
 
 type PayloadKind int
