@@ -1,6 +1,9 @@
 package main
 
 import (
+	// "fmt"
+	"strconv"
+	"strings"
 	// "encoding/json"
 	// "cloud.google.com/go/firestore"
 	whatsapp "github.com/Rhymen/go-whatsapp"
@@ -30,7 +33,7 @@ func (c *Contact) fromWhatsApp(waContact whatsapp.Contact) {
 		name = waContact.Notify
 	}
 
-	c.ID = genContactId(WhatsAppProtocol, waContact.Jid)
+	c.ID = genContactId(int(WhatsAppProtocol), strings.Split(waContact.Jid, "-"))
 	c.Name = name
 	c.Phone = StripWhatsAppAt(waContact.Jid)
 	c.WhatsApp = &WhatsAppContact{
@@ -40,14 +43,16 @@ func (c *Contact) fromWhatsApp(waContact whatsapp.Contact) {
 	}
 }
 
-func genContactId(prot int, id string) string {
-	nums := make([]int, 0, 2)
+func genContactId(prot int, parts []string) string {
+	nums := make([]int, 0, 3)
 	nums = append(nums, prot)
 
-	if num, err := strconv.Atoi(StripWhatsAppAt(id)); err != nil {
-		panic(err)
-	} else {
-		nums = append(nums, num)
+	for _, part := range parts {
+		if num, err := strconv.Atoi(StripWhatsAppAt(part)); err != nil {
+			panic(err)
+		} else {
+			nums = append(nums, num)
+		}
 	}
 
 	return HashIDs(nums)
