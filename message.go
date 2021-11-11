@@ -116,13 +116,13 @@ type File struct {
 
 type Cache struct {
 	Chats map[string]Chat
-	Contacts map[string]ContactInfo
+	Contacts map[string]Contact
 }
 
 func NewCache() *Cache {
 	return &Cache{
 		make(map[string]Chat),
-		make(map[string]ContactInfo),
+		make(map[string]Contact),
 	}
 }
 
@@ -136,13 +136,13 @@ func (c *Cache) GetChat(id string) Chat {
 	return c.Chats[id]
 }
 
-func (c *Cache) SetContacts(contacts []ContactInfo) {
+func (c *Cache) SetContacts(contacts []Contact) {
 	for _, contact := range contacts {
 		c.Contacts[contact.ID] = contact
 	}
 }
 
-func (c *Cache) GetContact(id string) ContactInfo {
+func (c *Cache) GetContact(id string) Contact {
 	return c.Contacts[id]
 }
 
