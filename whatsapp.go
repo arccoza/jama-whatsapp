@@ -9,6 +9,8 @@ import (
 	whatsapp "github.com/Rhymen/go-whatsapp"
 	// "github.com/Rhymen/go-whatsapp/binary/proto"
 	// "github.com/k0kubun/pp"
+	"sync"
+	"encoding/json"
 )
 
 type WhatsAppConnector struct {
@@ -96,10 +98,39 @@ func (wh *waHandler) HandleContactMessage(message whatsapp.ContactMessage) {
 	fmt.Println("HandleContactMessage\n", message)
 }
 
-// func (wh *waHandler) HandleContactList(waContacts []whatsapp.Contact) {
-// 	fmt.Printf("\nHandleContactList\n")
-// 	fmt.Printf("%+v\n", waContacts)
-// }
+func (wh *waHandler) HandleContactList(waContacts []whatsapp.Contact) {
+	// fmt.Printf("\nHandleContactList\n")
+	// fmt.Printf("%+v\n", waContacts)
+	contacts := make([]Contact, 0, len(waContacts))
+	var wg sync.WaitGroup
+
+	for _, waContact := range waContacts {
+		// There's a contact for broadcast? Just skip it.
+		if waContact.Jid == "status@broadcast" {
+			continue
+		}
+
+		contact := &Contact{}
+		contact.fromWhatsApp(waContact)
+		contacts = append(contacts, *contact)
+		ch, _ := wh.conn.GetProfilePicThumb(waContact.Jid)
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for str := range ch {
+				var dat map[string]interface{}
+				json.Unmarshal([]byte(str), &dat)
+				if url, _ := dat["eurl"]; url != nil {
+					contact.WhatsApp.Avatar = url.(string)
+				}
+				// fmt.Println(contact)
+			}
+		}()
+	}
+
+	wg.Wait()
+	wh.notify(Payload{Contacts: contacts})
+}
 
 // func (wh *waHandler) HandleNewContact(waContact whatsapp.Contact) {
 // 	fmt.Printf("\nHandleNewContact\n")
@@ -120,7 +151,7 @@ func (wh *waHandler) HandleChatList(waChats []whatsapp.Chat) {
 	}
 
 	// fmt.Printf("\nHandleChatList\n")
-	// fmt.Printf("%+v\n", chats)
+	// fmt.Printf("%+v\n", waChats)
 
 	wh.notify(Payload{Chats: chats})
 }
@@ -128,7 +159,6 @@ func (wh *waHandler) HandleChatList(waChats []whatsapp.Chat) {
 func (wh *waHandler) HandleTextMessage(waMsg whatsapp.TextMessage) {
 	msg := &Message{}
 	msg.fromWhatsApp(waMsg, wh.conn)
-	fmt.Println("HandleTextMessage\n", waMsg)
 
 	pay := Payload{Messages: []Message{*msg}}
 	// fmt.Printf("\nHandleTextMessage\n")
