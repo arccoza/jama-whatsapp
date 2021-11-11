@@ -136,17 +136,30 @@ func (wh *waHandler) HandleContactList(waContacts []whatsapp.Contact) {
 // }
 
 func (wh *waHandler) HandleChatList(waChats []whatsapp.Chat) {
-	chats := make([]Chat, 0, len(waChats))
+	chats := make([]Chat, len(waChats))
+	var wg sync.WaitGroup
 
-	for _, waChat := range waChats {
+	fmt.Println("--->", waChats)
+	for i, waChat := range waChats {
 		chat := &Chat{UID: wh.integ.InID}
 		chat.fromWhatsApp(waChat, wh.conn)
-		chats = append(chats, *chat)
+		// chats = append(chats, *chat)
+		chats[i] = *chat
+		wg.Add(1)
+		go func(i int, jid string) {
+			defer wg.Done()
+			time.Sleep(1 * time.Second)
+			pic, _ := wh.conn.GetProfilePicThumb(jid)
+			fmt.Println(jid, pic)
+			chats[i].Avatar = pic.URL
+		}(i, waChat.Jid)
 	}
 
 	// fmt.Printf("\nHandleChatList\n")
 	// fmt.Printf("%+v\n", waChats)
 
+	wh.notify(Payload{Chats: chats})
+	wg.Wait()
 	wh.notify(Payload{Chats: chats})
 }
 
