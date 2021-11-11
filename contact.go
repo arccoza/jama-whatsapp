@@ -12,7 +12,7 @@ import (
 type Contact struct {
 	ID string `json:"-" firestore:"-"`
 	Name string `json:"name" firestore:"name"`
-	Phone string `json:"name" firestore:"name"`
+	Phone string `json:"phone" firestore:"phone"`
 	WhatsApp *WhatsAppContact `json:"whatsapp" firestore:"whatsapp"`
 	mask []string
 }
@@ -20,8 +20,8 @@ type Contact struct {
 type WhatsAppContact struct {
 	ID string `json:"id" firestore:"id"`
 	Name string `json:"name" firestore:"name"`
-	Phone string `json:"name" firestore:"name"`
-	Avatar string `json:"name" firestore:"name"`
+	Phone string `json:"phone" firestore:"phone"`
+	Avatar string `json:"avatar" firestore:"avatar"`
 }
 
 func (c *Contact) fromWhatsApp(waContact whatsapp.Contact) {
