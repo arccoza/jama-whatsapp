@@ -21,7 +21,7 @@ type WhatsAppContact struct {
 	Avatar string `json:"name" firestore:"name"`
 }
 
-func (c *Contact) fromWhatsAppContact(waContact whatsapp.Contact) {
+func (c *Contact) fromWhatsApp(waContact whatsapp.Contact) {
 	name := waContact.Name
 	switch {
 	case waContact.Short != "":
