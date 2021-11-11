@@ -34,6 +34,7 @@ const (
 
 type Chat struct {
 	ID string `json:"-" firestore:"-"`
+	ExID string `json:"exId" firestore:"exId"`
 	Name string `json:"name" firestore:"name"`
 	Type ChatType `json:"type" firestore:"type"`// Group, Direct or Bot
 	Owner string `json:"owner" firestore:"owner"`
@@ -58,6 +59,7 @@ func (c *Chat) fromWhatsApp(waChat whatsapp.Chat, wac *whatsapp.Conn) error {
 	mid := cid // Member id
 	timestamp, _ := strconv.Atoi(waChat.LastMessageTime)
 
+	c.ExID = cid
 	c.Name = waChat.Name
 	c.Protocol = WhatsAppProtocol
 	c.Timestamp = int64(timestamp)
