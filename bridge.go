@@ -91,11 +91,6 @@ func (bm *BridgeManager) remBridge(integ *Integration) {
 	delete(bm.bridges, integ.ID)
 }
 
-func main() {
-	jc := NewBridgeManager(context.Background(), db)
-	jc.Listen()
-}
-
 type Integration struct {
 	ID       string `json:"-" firestore:"-"`
 	Org      string `json:"-" firestore:"-"`
