@@ -113,13 +113,21 @@ func (wh *waHandler) HandleContactList(waContacts []whatsapp.Contact) {
 
 		contact := &Contact{}
 		contact.fromWhatsApp(waContact)
-		// contacts = append(contacts, *contact)
 		contacts[i] = *contact
+
+		cacheKey := fmt.Sprintf("wac.GetProfilePicThumb(%s)", waContact.Jid)
+		if pic, ok := cache.Get(cacheKey); ok {
+			contacts[i].WhatsApp.Avatar = pic.(whatsapp.ProfilePic).URL
+			continue
+		}
+
 		wg.Add(1)
 		go func(i int, jid string) {
 			defer wg.Done()
 			time.Sleep(1 * time.Second)
 			pic, _ := wh.conn.GetProfilePicThumb(jid)
+			cache.SetWithTTL(cacheKey, pic, 64, 12 * time.Hour)
+			cache.Wait()
 			contacts[i].WhatsApp.Avatar = pic.URL
 		}(i, waContact.Jid)
 	}
@@ -142,17 +150,24 @@ func (wh *waHandler) HandleChatList(waChats []whatsapp.Chat) {
 	chats := make([]Chat, len(waChats))
 	var wg sync.WaitGroup
 
-	fmt.Println("--->", waChats)
 	for i, waChat := range waChats {
 		chat := &Chat{UID: wh.integ.InID}
 		chat.fromWhatsApp(waChat, wh.conn)
-		// chats = append(chats, *chat)
 		chats[i] = *chat
+
+		cacheKey := fmt.Sprintf("wac.GetProfilePicThumb(%s)", waChat.Jid)
+		if pic, ok := cache.Get(cacheKey); ok {
+			chats[i].Avatar = pic.(whatsapp.ProfilePic).URL
+			continue
+		}
+
 		wg.Add(1)
 		go func(i int, jid string) {
 			defer wg.Done()
 			time.Sleep(1 * time.Second)
 			pic, _ := wh.conn.GetProfilePicThumb(jid)
+			cache.SetWithTTL(cacheKey, pic, 64, 12 * time.Hour)
+			cache.Wait()
 			fmt.Println(jid, pic)
 			chats[i].Avatar = pic.URL
 		}(i, waChat.Jid)
@@ -200,8 +215,8 @@ func initWhatsApp(integ *Integration, handler *waHandler) (*whatsapp.Conn, error
 		return nil, err
 	}
 
-	wac.SetClientVersion(2, 2136, 10)
-	wac.SetClientName("JAMA", "jama", "0,1,0")
+	wac.SetClientVersion(2, 2144, 8)
+	// wac.SetClientName("JAMA", "jama", "0,1,0")
 	handler.conn = wac
 	handler.integ = integ
 	wac.AddHandler(handler)
