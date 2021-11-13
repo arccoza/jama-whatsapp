@@ -80,7 +80,7 @@ func (c *JamaConnector) notify(pay Payload) {
 func (c *JamaConnector) Start() {
 	// cit := c.chats.Where("status", "==", Pending).Snapshots(c.ctx)
 	// mit := c.messages.Where("status", "==", Pending).Snapshots(c.ctx)
-	qm := c.messages.Where("status", "==", Pending).Where("origin", "==", Internal)
+	qm := c.messages.Where("status", "==", Pending).Where("origin", "==", Internal).Where("from", "==", c.integ.ExID)
 
 	go c.listen(qm, func(change firestore.DocumentChange){
 		switch change.Kind {
