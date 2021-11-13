@@ -85,9 +85,11 @@ func (c *JamaConnector) Start() {
 	go c.listen(qm, func(change firestore.DocumentChange){
 		switch change.Kind {
 		case firestore.DocumentAdded:
-			msg := &Message{}
-			change.Doc.DataTo(msg)
+			msg := Message{}
+			change.Doc.DataTo(&msg)
+			msg.ID = change.Doc.Ref.ID
 			fmt.Println("Added: %v\n", msg)
+			c.notify(Payload{Messages: []Message{msg}})
 		case firestore.DocumentModified:
 			fmt.Println("Modified: %v\n", change.Doc.Data())
 		case firestore.DocumentRemoved:
