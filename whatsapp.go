@@ -34,7 +34,7 @@ func NewWhatsAppConnector(integ *Integration) *WhatsAppConnector {
 	return c
 }
 
-func (c WhatsAppConnector) Start() error {
+func (c *WhatsAppConnector) Start() error {
 	conn, err := initWhatsApp(c.integ, &waHandler{
 		notify: func(pay Payload) {
 			c.notify(pay)
@@ -49,17 +49,29 @@ func (c WhatsAppConnector) Start() error {
 	return nil
 }
 
-func (c WhatsAppConnector) Publish(pay Payload) {
+func (c *WhatsAppConnector) Publish(pay Payload) {
 	for _, msg := range pay.Messages {
 		c.conn.Send(msg.toWhatsApp())
+		// fmt.Printf("------> %+v\n", msg.toWhatsApp())
+		// fmt.Println("***>", str, err)
 	}
+
+	// text := whatsapp.TextMessage{
+	// 	Info: whatsapp.MessageInfo{
+	// 		RemoteJid: "6588900513@s.whatsapp.net",
+	// 	},
+	// 	Text: "test 2",
+	// }
+
+	// str, err := c.conn.Send(text)
+	// fmt.Println("***>", str, err)
 }
 
-func (c WhatsAppConnector) Subscribe(fn Handler) {
+func (c *WhatsAppConnector) Subscribe(fn Handler) {
 	c.subscribers[&fn] = fn
 }
 
-func (c WhatsAppConnector) Unsubscribe(fn Handler) {
+func (c *WhatsAppConnector) Unsubscribe(fn Handler) {
 
 }
 
@@ -69,7 +81,7 @@ func (c *WhatsAppConnector) notify(pay Payload) {
 	}
 }
 
-func (c WhatsAppConnector) Query(q string) []Payload {
+func (c *WhatsAppConnector) Query(q string) []Payload {
 	return nil
 }
 
@@ -217,8 +229,8 @@ func initWhatsApp(integ *Integration, handler *waHandler) (*whatsapp.Conn, error
 		return nil, err
 	}
 
-	wac.SetClientVersion(2, 2144, 8)
-	// wac.SetClientName("JAMA", "jama", "0,1,0")
+	wac.SetClientVersion(2, 2144, 10)
+	wac.SetClientName("4845", "6565", "0,1,0")
 	handler.conn = wac
 	handler.integ = integ
 	wac.AddHandler(handler)
