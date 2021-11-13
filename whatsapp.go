@@ -151,7 +151,7 @@ func (wh *waHandler) HandleChatList(waChats []whatsapp.Chat) {
 	var wg sync.WaitGroup
 
 	for i, waChat := range waChats {
-		chat := &Chat{UID: wh.integ.InID}
+		chat := &Chat{Users: map[string]bool{wh.integ.InID: true}}
 		chat.fromWhatsApp(waChat, wh.conn)
 		chats[i] = *chat
 

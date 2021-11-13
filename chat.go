@@ -34,7 +34,6 @@ const (
 
 type Chat struct {
 	ID string `json:"-" firestore:"-"`
-	UID string `json:"uid" firestore:"uid"`
 	ExID string `json:"exId" firestore:"exId"`
 	Name string `json:"name" firestore:"name"`
 	Type ChatType `json:"type" firestore:"type"`// Group, Direct or Bot
@@ -45,6 +44,8 @@ type Chat struct {
 	Members map[string]ChatMember `json:"members" firestore:"members"`
 	Timestamp int64 `json:"updated" firestore:"updated"`
 	Avatar string `json:"avatar,omitempty" firestore:"avatar,omitempty"`
+	Users map[string]bool `json:"users" firestore:"users"`
+	Opportunities map[string]bool `json:"opportunities" firestore:"opportunities"`
 }
 
 type ChatMember struct {
