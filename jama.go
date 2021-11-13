@@ -51,15 +51,15 @@ func NewJamaConnector(
 func (c *JamaConnector) Publish(pay Payload) {
 	for _, chat := range pay.Chats {
 		// c.chats.Doc(chat.ID).Set(c.ctx, chat, firestore.MergeAll)
-		c.chats.Doc(chat.ID).Set(c.ctx, chat)
+		c.chats.Doc(chat.ID).Set(c.ctx, ToMap(chat, "firestore"), firestore.MergeAll)
 	}
 
 	for _, msg := range pay.Messages {
-		c.messages.Doc(msg.ID).Set(c.ctx, msg)
+		c.messages.Doc(msg.ID).Set(c.ctx, ToMap(msg, "firestore"), firestore.MergeAll)
 	}
 
 	for _, contact := range pay.Contacts {
-		c.contacts.Doc(contact.ID).Set(c.ctx, contact)
+		c.contacts.Doc(contact.ID).Set(c.ctx, ToMap(contact, "firestore"), firestore.MergeAll)
 	}
 }
 
