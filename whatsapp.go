@@ -151,6 +151,8 @@ func (wh *waHandler) HandleChatList(waChats []whatsapp.Chat) {
 	var wg sync.WaitGroup
 
 	for i, waChat := range waChats {
+		// TODO: Create a custom Set type that is converted into a Firestore array
+		// using ArrayUnion, ArrayRemove
 		chat := &Chat{Users: map[string]bool{wh.integ.InID: true}}
 		chat.fromWhatsApp(waChat, wh.conn)
 		chats[i] = *chat
