@@ -261,6 +261,7 @@ func initWhatsApp(integ *Integration, handler *waHandler) (*whatsapp.Conn, error
 	if session, err := wac.Login(qrChan); err == nil {
 		integ.Whatsapp.Session = session
 		integ.ExID = session.Wid
+		integ.Whatsapp.QRValue = ""
 		integ.ref.Set(context.Background(), integ)
 		return wac, nil
 	} else {
