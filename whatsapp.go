@@ -223,7 +223,7 @@ func (wh *waHandler) HandleTextMessage(waMsg whatsapp.TextMessage) {
 // }
 
 func initWhatsApp(integ *Integration, handler *waHandler) (*whatsapp.Conn, error) {
-	wac, err := whatsapp.NewConn(30 * time.Second)
+	wac, err := whatsapp.NewConn(60 * time.Second)
 	if err != nil {
 		fmt.Println("WhatsApp connect error: \n", err)
 		return nil, err
