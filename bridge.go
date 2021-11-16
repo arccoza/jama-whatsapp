@@ -67,12 +67,14 @@ func (bm *BridgeManager) addBridge(integ *Integration) {
 	b := NewWhatsAppConnector(integ)
 
 	b.Subscribe(a.Publish)
-	// a.Subscribe(b.Publish)
 
 	if err := b.Start(); err != nil {
 		fmt.Println("Error starting Connector: \n", err)
 		return
 	}
+
+	// fmt.Println("$$$$>", b.conn)
+	a.Subscribe(b.Publish)
 	a.Start()
 
 	bm.bridges[integ.ID] = Bridge{a, b}
