@@ -1,6 +1,7 @@
 package main
 
 import (
+	// "fmt"
 	// "encoding/json"
 	// "cloud.google.com/go/firestore"
 	whatsapp "github.com/Rhymen/go-whatsapp"
@@ -98,6 +99,8 @@ func (c *Chat) fromWhatsApp(waChat whatsapp.Chat, wac *whatsapp.Conn) error {
 		if meta, err := wac.GetGroupMetaData(waChat.Jid, cache); err != nil {
 			return err
 		} else {
+			// fmt.Printf("\nGetGroupMetaData\n")
+			// fmt.Printf("%+v\n", meta)
 			c.Owner = NormalizeWhatsAppId(meta.Owner)
 
 			for _, p := range meta.Participants {
