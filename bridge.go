@@ -104,6 +104,7 @@ type Integration struct {
 	Kind     string `json:"kind" firestore:"kind"`
 	ref      *firestore.DocumentRef `json:"-" firestore:"-"`
 	Whatsapp *WhatsAppIntegration `json:"whatsapp" firestore:"whatsapp"`
+	Telegram *TelegramIntegration `json:"telegram" firestore:"telegram"`
 	Timestamps *Timestamps `json:"timestamps" firestore:"timestamps"`
 }
 
@@ -115,4 +116,19 @@ type WhatsAppIntegration struct {
 type Timestamps struct {
 	Created int64 `json:"created" firestore:"created"`
 	Updated int64 `json:"updated" firestore:"updated"`
+}
+
+type TelegramIntegration struct {
+	Session string
+}
+
+func (ti *TelegramIntegration) LoadSession(ctx context.Context) ([]byte, error) {
+	fmt.Println("LoadSession: ", ti.Session)
+	return []byte(ti.Session), nil
+}
+
+func (ti *TelegramIntegration) StoreSession(ctx context.Context, data []byte) error {
+	fmt.Println("StoreSession: ", string(data))
+	ti.Session = string(data)
+	return nil
 }
