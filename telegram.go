@@ -245,9 +245,7 @@ func (a TelegramUserAuth) Code(_ context.Context, _ *tg.AuthSentCode) (string, e
 // 	})
 // }
 
-
 type TelegramConnector struct {
-	tg.UpdateDispatcher
 	integ *Integration
 	conn *telegram.Client
 	subscribers map[*Handler]Handler
@@ -302,6 +300,7 @@ func (c *TelegramConnector) Query(q string) []Payload {
 }
 
 type tgHandler struct {
+	tg.UpdateDispatcher
 	conn *whatsapp.Conn
 	integ *Integration
 	notify func(pay Payload)
