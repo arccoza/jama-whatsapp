@@ -95,7 +95,7 @@ func (c *Chat) fromWhatsApp(waChat whatsapp.Chat, wac *whatsapp.Conn) error {
 		c.Type = GroupChat
 		c.ID = genChatId(int(WhatsAppProtocol), int(GroupChat), strings.Split(cid, "-"))
 
-		if meta, err := wac.GetGroupMetaData(waChat.Jid); err != nil {
+		if meta, err := wac.GetGroupMetaData(waChat.Jid, cache); err != nil {
 			return err
 		} else {
 			c.Owner = NormalizeWhatsAppId(meta.Owner)
